@@ -1,11 +1,4 @@
-import {
-	Application,
-	json,
-	urlencoded,
-	Request,
-	Response,
-	NextFunction
-} from 'express';
+import { Application, json, urlencoded, Request, Response, NextFunction } from 'express';
 
 import http from 'http';
 import cors from 'cors';
@@ -22,13 +15,14 @@ import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 
-import applicationRoutes from './routes';
+import applicationRoutes from '@root/routes';
+import { config } from '@root/config';
+import { CustomError, IErrorResponse } from '@global/helpers/error_handler';
 
-import { config } from './config';
-import {
-	CustomError,
-	IErrorResponse
-} from './shared/globals/helpers/error_handler';
+// import {
+// 	CustomError,
+// 	IErrorResponse
+// } from './shared/globals/helpers/error_handler';
 
 // INDICATES THAT ERROR CAME FROM SERVER FILE
 const log: Logger = config.createLogger('server');
@@ -93,12 +87,7 @@ export class WechatServer {
 		});
 
 		app.use(
-			(
-				error: IErrorResponse,
-				req: Request,
-				res: Response,
-				next: NextFunction
-			) => {
+			(error: IErrorResponse, req: Request, res: Response, next: NextFunction) => {
 				log.error(error);
 
 				// check if it is any of the child class error
@@ -113,12 +102,13 @@ export class WechatServer {
 
 	private async startServer(app: Application): Promise<void> {
 		try {
+			// CREATING HTTP SERVER WITH EXPRESS APP
 			const httpServer: http.Server = new http.Server(app);
-
-			const socketio: Server = await this.createSocketIO(httpServer);
-
+			// PASSING THE HTTP SERVER TO START
 			this.startHttpServer(httpServer);
 
+			// CREATING SOCKET WITH HTTP SERVER
+			const socketio: Server = await this.createSocketIO(httpServer);
 			this.socketIOConnection(socketio);
 		} catch (err) {
 			log.error(err);
@@ -128,6 +118,7 @@ export class WechatServer {
 	private startHttpServer(httpServer: http.Server): void {
 		log.info(`Server with pid ${process.pid} has started`);
 
+		// Start a server listening for connections.
 		httpServer.listen(config.SERVER_PORT, () => {
 			log.info('SERVER LISTENING ON PORT 5000!!!');
 		});
@@ -136,6 +127,7 @@ export class WechatServer {
 	// Runs multiple Socket.IO instances in different processes or servers
 	// that can all broadcast and emit events to and from each other.
 	private async createSocketIO(httpServer: http.Server): Promise<Server> {
+		// Server constructor, Returns SOCKETIO SERVER
 		const io: Server = new Server(httpServer, {
 			cors: {
 				origin: config.CLIENT_URL,
@@ -143,11 +135,17 @@ export class WechatServer {
 			}
 		});
 
+		// Redis client that will be used to publish messages
 		const pubClient = createClient({ url: config.REDIS_HOST });
+		// Redis client that will be used to receive messages (put in subscribed state)
 		const subClient = pubClient.duplicate();
 
+		// Creates a Promise that is resolved with an array of results
+		// when all of the provided Promises resolve,
+		// or rejected when any Promise is rejected.
 		await Promise.all([pubClient.connect(), subClient.connect()]);
 
+		// Returns a function that will create a RedisAdapter instance.
 		io.adapter(createAdapter(pubClient, subClient));
 
 		return io;

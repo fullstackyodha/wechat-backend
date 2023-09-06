@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import { config } from './config';
+import { config } from '@root/config';
 import Logger from 'bunyan';
+import { redisConnection } from '@service/redis/redis.connection';
 
 // INDICATES THAT ERROR CAME FROM SERVER FILE
 const log: Logger = config.createLogger('databaseSetup');
@@ -15,8 +16,13 @@ export default function () {
 
 		mongoose
 			.connect(database_url)
-			.then((conn) => log.info('DATABASE SUCCESSFULLY CONNECTED!!!'))
-			.catch((err) => {
+			.then(() => {
+				log.info('DATABASE SUCCESSFULLY CONNECTED!!!');
+
+				// CONNECTION TO REDIS CLIENT
+				redisConnection.connect();
+			})
+			.catch(() => {
 				log.error('ERROR CONNECTING DATABASE!!!');
 				return process.exit(1);
 			});

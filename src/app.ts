@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
-import { WechatServer } from './setupServer';
-import databaseConnection from './setupDatabase';
-import { config } from './config';
+import { WechatServer } from '@root/setupServer';
+import databaseConnection from '@root/setupDatabase';
+import { config } from '@root/config';
 
 class Application {
 	public initialize(): void {
@@ -21,7 +21,11 @@ class Application {
 	}
 
 	public loadConfig(): void {
+		// VALIDATE THE CONFIG VARIABLES
 		config.validateConfig();
+
+		// CONFIG CLOUDINARY
+		config.cloudinaryConfig();
 	}
 }
 
