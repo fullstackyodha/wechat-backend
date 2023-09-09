@@ -8,8 +8,8 @@ import { authService } from '@service/db/auth.service';
 import { BadRequestError } from '@global/helpers/error_handler';
 import { loginSchema } from '@auth/schemes/signin';
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
-import { IUserDocument } from '@user/interfaces/user.interface';
 import { userService } from '@service/db/user.service';
+import { IUserDocument } from '@user/interfaces/user.interface';
 
 // const log: Logger = config.createLogger('signin');
 
@@ -26,6 +26,7 @@ export class SignIn {
 			throw new BadRequestError('Invalid Credentials');
 		}
 
+		// CHECK IF PASSWORD MATCHES
 		const passwordMatch: boolean = await exisitingUser.comparePassword(password);
 
 		if (!passwordMatch) {
@@ -66,7 +67,7 @@ export class SignIn {
 		} as IUserDocument;
 
 		res.status(HTTP_STATUS.OK).json({
-			message: 'User Signed Up Successfully!!!',
+			message: 'User Logged In Successfully!!!',
 			data: { user: userDocument, token: userJWT }
 		});
 	}

@@ -7,6 +7,7 @@ dotenv.config({}); // .env file in the root folder no need to specify the path
 class Config {
 	public DATABASE_URL: string | undefined;
 	public DATABASE_PASSWORD: string | undefined;
+
 	public SERVER_PORT: string | undefined;
 	public JWT_TOKEN: string | undefined;
 	public NODE_ENV: string | undefined;
@@ -14,9 +15,15 @@ class Config {
 	public SECRET_KEY_2: string | undefined;
 	public CLIENT_URL: string | undefined;
 	public REDIS_HOST: string | undefined;
+
 	public CLOUD_NAME: string | undefined;
 	public CLOUD_API_KEY: string | undefined;
 	public CLOUD_API_SECRET: string | undefined;
+
+	public SENDER_EMAIL: string | undefined;
+	public SENDER_EMAIL_PASSWORD: string | undefined;
+	public SENDGRID_API_KEY: string | undefined;
+	public SENDGRID_SENDER: string | undefined;
 
 	constructor() {
 		this.DATABASE_URL = process.env.DATABASE_URL;
@@ -31,6 +38,10 @@ class Config {
 		this.CLOUD_NAME = process.env.CLOUD_NAME || '';
 		this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || '';
 		this.CLOUD_API_SECRET = process.env.CLOUD_API_SECRET || '';
+		this.SENDER_EMAIL = process.env.SENDER_EMAIL || '';
+		this.SENDER_EMAIL_PASSWORD = process.env.SENDER_EMAIL_PASSWORD || '';
+		this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
+		this.SENDGRID_SENDER = process.env.CLOUD_API_SECRET || '';
 	}
 
 	public validateConfig(): void {

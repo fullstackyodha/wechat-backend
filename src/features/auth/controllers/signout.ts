@@ -11,7 +11,7 @@ export class SignOut {
 		return res.status(HTTP_STATUS.OK).json({
 			message: 'User Logged Out Successfully!!!',
 			user: {},
-			toke: {}
+			token: {}
 		});
 	}
 }
