@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Request, Response } from 'express';
 import { joiValidation } from '@global/decorators/joi-validation.decorators';
-import { signupSchema } from '@auth/schemes/signup';
 import { IAuthDocument, ISignUpData } from '@auth/interfaces/auth.interface';
 import { authService } from '@service/db/auth.service';
 import { BadRequestError } from '@global/helpers/error_handler';
@@ -16,6 +15,7 @@ import { omit } from 'lodash';
 import { authQueue } from '@service/queues/auth.queue';
 import { userQueue } from '@service/queues/user.queue';
 import JWT from 'jsonwebtoken';
+import { signupSchema } from '@auth/schemes/signup';
 
 // CREATING USER CACHE
 const userCache: UserCache = new UserCache();
