@@ -31,9 +31,9 @@ class AuthService {
 			]
 		};
 
-		const user: IAuthDocument = (await AuthModel.findOne(
-			query
-		).exec()) as IAuthDocument;
+		const user: IAuthDocument = (await AuthModel.findOne(query)
+			// Executes the query
+			.exec()) as IAuthDocument;
 
 		return user;
 	}

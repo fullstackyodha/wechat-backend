@@ -27,7 +27,7 @@ const authSchema: Schema = new Schema(
 	}
 );
 
-// RUNS BEFORE SAVING THE DOCUMENT TO THE DATABASE
+// RUNS BEFORE SAVING THE CURRENT DOCUMENT TO THE DATABASE
 authSchema.pre('save', async function (this: IAuthDocument, next: () => void) {
 	// HASH PASSWORD STRING WITH SALT ROUNDS
 	const hashedPassword: string = await hash(this.password as string, SALT_ROUND);

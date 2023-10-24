@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import bunyan from 'bunyan';
 import cloudinary from 'cloudinary';
 
+// Loads .env file contents into process.env by default.
 dotenv.config({}); // .env file in the root folder no need to specify the path
 
 class Config {

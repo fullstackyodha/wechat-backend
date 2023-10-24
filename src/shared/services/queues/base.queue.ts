@@ -1,13 +1,17 @@
-import Queue, { Job } from 'bull';
 import Logger from 'bunyan';
+
+import Queue, { Job } from 'bull';
 import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { ExpressAdapter } from '@bull-board/express';
+
 import { config } from '@root/config';
+
 import { IAuthJob } from '@auth/interfaces/auth.interface';
 import { IEmailJob } from '@user/interfaces/user.interface';
+import { IPostJobData } from '@post/interfaces/post.interface';
 
-type IBaseJobData = IAuthJob | IEmailJob;
+type IBaseJobData = IAuthJob | IEmailJob | IPostJobData;
 
 // ARRAY TO STORE THE DISTINCT QUEUES
 let bullAdapters: BullAdapter[] = [];
@@ -21,6 +25,7 @@ export abstract class BaseQueue {
 	constructor(queueName: string) {
 		// CREATING QUEUE. It creates a new Queue that is persisted in Redis.
 		this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
+		// Push Queue to the adapter
 		bullAdapters.push(new BullAdapter(this.queue));
 		// ONLY DISTINCT QUEUES
 		bullAdapters = [...new Set(bullAdapters)];

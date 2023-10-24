@@ -17,16 +17,19 @@ class UserService {
 				}
 			},
 			{
-				// Look up into Auth collections with authId as local field
-				// in User collection and _id as foreign field in Auth Collection
+				// Look up into User collections with authId as foreign field
+				// REFERENCING _id as Local field in Auth Collection
 				$lookup: {
 					from: 'Auth',
-					localField: 'authId',
-					foreignField: '_id',
-					as: 'authId'
+					localField: 'authId', // in User
+					foreignField: '_id', // in Auth
+					as: 'authId' // in User
 				}
 			},
-			{ $unwind: '$authId' },
+			{
+				// Unwinds all the properties & returns data as an object
+				$unwind: '$authId'
+			},
 			{ $project: this.aggregateProject() }
 		]);
 

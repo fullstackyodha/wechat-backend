@@ -5,7 +5,6 @@ import { IAuthDocument, ISignUpData } from '@auth/interfaces/auth.interface';
 import { authService } from '@service/db/auth.service';
 import { BadRequestError } from '@global/helpers/error_handler';
 import { Helpers } from '@global/helpers/helpers';
-import HTTP_STATUS from 'http-status-codes';
 import { UploadApiResponse } from 'cloudinary';
 import { uploads } from '@global/helpers/cloudinaryUpload';
 import { IUserDocument } from '@user/interfaces/user.interface';
@@ -14,13 +13,15 @@ import { config } from '@root/config';
 import { omit } from 'lodash';
 import { authQueue } from '@service/queues/auth.queue';
 import { userQueue } from '@service/queues/user.queue';
-import JWT from 'jsonwebtoken';
 import { signupSchema } from '@auth/schemes/signup';
+import JWT from 'jsonwebtoken';
+import HTTP_STATUS from 'http-status-codes';
 
 // CREATING USER CACHE
 const userCache: UserCache = new UserCache();
 
 export class SignUp {
+	// SIGNUP / CREATE USER
 	@joiValidation(signupSchema)
 	public async create(req: Request, res: Response): Promise<void> {
 		const { username, email, password, avatarColor, avatarImage } = req.body;
@@ -35,6 +36,7 @@ export class SignUp {
 			throw new BadRequestError('Invalid Credentials');
 		}
 
+		// WE ARE CREATING BOTH ID SO THAT WE CAN SAVE IT TO REDIS CACHE
 		// AuthId for user which is created by Mongodb
 		const authObjectId: ObjectId = new ObjectId();
 
@@ -68,7 +70,7 @@ export class SignUp {
 			throw new BadRequestError('File upload: Error occured. Try again!!!');
 		}
 
-		// ADD TO REDIS CACHE
+		// DATA FOR REDIS CACHE
 		const userDataForCache: IUserDocument = SignUp.prototype.userData(
 			authData,
 			userObjectId

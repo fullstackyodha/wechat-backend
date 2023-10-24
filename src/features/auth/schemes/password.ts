@@ -15,6 +15,10 @@ const passwordSchema: ObjectSchema = Joi.object().keys({
 		'string.max': 'Invalid password',
 		'string.empty': 'Password is a required field'
 	}),
+
+	// valid() - Adds the provided values into the allowed whitelist
+	// and marks them as the only valid values allowed
+	// ref() - Generates a reference to the value of the named key.
 	confirmPassword: Joi.string().required().valid(Joi.ref('password')).messages({
 		'any.only': 'Passwords should match',
 		'any.required': 'Confirm password is a required field'

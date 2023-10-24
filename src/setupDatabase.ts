@@ -14,6 +14,7 @@ export default function () {
 			config.DATABASE_PASSWORD!
 		)!;
 
+		// Conenct to mongodb via mongoose
 		mongoose
 			.connect(database_url)
 			.then(() => {

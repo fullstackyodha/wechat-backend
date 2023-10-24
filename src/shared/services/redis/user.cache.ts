@@ -97,10 +97,13 @@ export class UserCache extends BaseCache {
 				await this.client.connect();
 			}
 
+			// Create a user set and add a member with score = uid and value = key(userObjectId)
 			await this.client.ZADD('user', {
 				score: parseInt(userUId, 10),
 				value: `${key}`
 			});
+
+			// Add memeber to HASH with key =  users:userObejctId & value as created userData
 			await this.client.HSET(`users:${key}`, dataToSave);
 		} catch (error) {
 			log.error(error);
