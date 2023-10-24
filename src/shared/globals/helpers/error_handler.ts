@@ -33,7 +33,7 @@ export abstract class CustomError extends Error {
 
 // CHILD CLASS
 export class BadRequestError extends CustomError {
-	statusCode: number = HTTP_STATUS.BAD_REQUEST;
+	statusCode: number = HTTP_STATUS.BAD_REQUEST; // 400
 	status: string = 'error';
 
 	constructor(message: string) {

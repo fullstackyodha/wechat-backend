@@ -45,7 +45,9 @@ describe('SignIn', () => {
 			{},
 			{ username: WRONG_USERNAME, password: WRONG_PASSWORD }
 		) as Request;
+
 		const res: Response = authMockResponse();
+
 		SignIn.prototype.read(req, res).catch((error: CustomError) => {
 			expect(error.statusCode).toEqual(400);
 			expect(error.serializeError().message).toEqual('Invalid username');

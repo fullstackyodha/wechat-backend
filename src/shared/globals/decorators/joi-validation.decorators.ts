@@ -13,11 +13,13 @@ export function joiValidation(schema: ObjectSchema): IJoiDecorator {
 		// console.log('Descriptor: ', descriptor);
 		// console.log('Original Method: ', originalMethod); // create()
 
+		// args = [req, res, next]
 		descriptor.value = async function (...args: any[]) {
 			const req: Request = args[0];
 
 			// Validates a value using the schema and options.
 			const { error } = await Promise.resolve(schema.validate(req.body));
+
 			if (error?.details) {
 				throw new JoiRequestValidationError(error?.details[0].message);
 			}

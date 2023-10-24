@@ -34,9 +34,9 @@ export class Password {
 		const randomChars: string = randomByte.toString('hex');
 
 		await authService.updatePasswordToken(
-			`${exisitingUser._id}`,
-			randomChars,
-			Date.now() * 1 * 60 * 60 * 1000 // valid only for one hour. 1 * 60 * 60 * 1000
+			`${exisitingUser._id}`, // user id
+			randomChars, // password reset token
+			Date.now() * 1 * 60 * 60 * 1000 // password reset expire. valid only for one hour. 1 * 60 * 60 * 1000
 		);
 
 		const resetLink = `${config.CLIENT_URL}/reset-password?token=${randomChars}`;

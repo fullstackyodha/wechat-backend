@@ -1,13 +1,14 @@
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { IUserDocument } from '@user/interfaces/user.interface';
-// import { IUserDocument } from '@user/interfaces/user.interface';
 
-// Adds the currentUser property to request
+// Adds the currentUser property to request interface
 declare global {
+	//	Express Framework
 	namespace Express {
+		// req.body, req.param, req.query & req.currentUser
 		interface Request {
-			// Optional as if user is not logged in then it will throw error
+			// Optional. if user is not logged in then it will throw error
 			currentUser?: AuthPayload; // req.body, req.params, req.currentUser
 		}
 	}

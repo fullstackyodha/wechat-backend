@@ -1,5 +1,6 @@
-import { createClient } from 'redis';
 import Logger from 'bunyan';
+import { createClient } from 'redis';
+
 import { config } from '@root/config';
 
 // sudo service redis-server start
@@ -19,6 +20,7 @@ export abstract class BaseCache {
 	}
 
 	private catchError(): void {
+		// Listen for error event
 		this.client.on('error', (error: unknown) => {
 			this.log.error(error);
 		});

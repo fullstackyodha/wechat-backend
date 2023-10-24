@@ -6,6 +6,7 @@ import { AuthPayload } from '@auth/interfaces/auth.interface';
 
 export class AuthMiddleware {
 	public verifyUser(req: Request, res: Response, next: NextFunction): void {
+		// Check if jwt token exist in session or got expired
 		if (!req.session!.jwt) {
 			throw new NotAuthorizedError('Please login, Token has expired!!!');
 		}
