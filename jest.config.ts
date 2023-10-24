@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
 		'^.+\\.ts?$': 'ts-jest'
 	},
 	testMatch: ['<rootDir>/src/**/test/*.ts'],
+	// Only from ts files only
 	collectCoverageFrom: ['src/**/*.ts', '!src/**/test/*.ts?(x)', '!**/node_modules/**'],
 	coverageThreshold: {
 		global: {
@@ -23,6 +24,7 @@ const config: Config.InitialOptions = {
 	coverageReporters: ['text-summary', 'lcov'],
 	moduleNameMapper: {
 		'@auth/(.*)': ['<rootDir>/src/features/auth/$1'],
+		'@post/(.*)': ['<rootDir>/src/features/post/$1'],
 		'@user/(.*)': ['<rootDir>/src/features/user/$1'],
 		'@global/(.*)': ['<rootDir>/src/shared/globals/$1'],
 		'@service/(.*)': ['<rootDir>/src/shared/services/$1'],

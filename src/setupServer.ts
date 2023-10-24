@@ -18,6 +18,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import applicationRoutes from '@root/routes';
 import { config } from '@root/config';
 import { CustomError, IErrorResponse } from '@global/helpers/error_handler';
+import { SocketIOPostHandler } from '@socket/post';
 
 // import {
 // 	CustomError,
@@ -38,22 +39,26 @@ export class WechatServer {
 		this.securityMiddleware(this.app);
 		this.standardMiddleware(this.app);
 		this.routeMiddleware(this.app);
-		this.globalHandler(this.app);
+		this.globalErrorHandler(this.app);
 		this.startServer(this.app);
 	}
 
 	private securityMiddleware(app: Application): void {
+		// Stores the Session data on the Client within a Cookie
 		app.use(
 			cookieSession({
 				name: 'session',
+				// The list of keys to use to sign & verify cookie values
 				keys: [config.SECRET_KEY_1!, config.SECRET_KEY_2!],
-				maxAge: 7 * 24 * 60 * 60 * 1000,
-				secure: config.NODE_ENV !== 'development'
+				maxAge: 7 * 24 * 60 * 60 * 1000, // milli-seconds
+				secure: config.NODE_ENV !== 'development' // true when in production
 			})
 		);
 
+		// Express middleware to protect against HTTP Parameter Pollution attacks
 		app.use(hpp());
 
+		// Helmet helps secure Express apps by setting HTTP response headers.
 		app.use(helmet());
 
 		app.use(
@@ -68,18 +73,24 @@ export class WechatServer {
 	}
 
 	private standardMiddleware(app: Application): void {
-		app.use(compression()); // helps in compressing size of req and res
+		// helps in compressing size of req and res
+		app.use(compression());
 
-		app.use(json({ limit: '50mb' })); // only parses json
+		// only parses json
+		app.use(json({ limit: '50mb' }));
 
-		app.use(urlencoded({ extended: true, limit: '50mb' })); // only parses urlencoded bodies
+		// It parses incoming requests with urlencoded payloads
+		// and is based on body - parser.
+		app.use(urlencoded({ extended: true, limit: '50mb' }));
+		// Parsing the URL-encoded data with qs library (when true),
+		// Controls the maximum request body size
 	}
 
 	private routeMiddleware(app: Application): void {
 		applicationRoutes(app);
 	}
 
-	private globalHandler(app: Application): void {
+	private globalErrorHandler(app: Application): void {
 		app.all('*', (req: Request, res: Response, next: NextFunction) => {
 			res.status(HTTP_STATUS.NOT_FOUND).json({
 				message: `${req.originalUrl} not found!!!`
@@ -137,19 +148,24 @@ export class WechatServer {
 
 		// Redis client that will be used to publish messages
 		const pubClient = createClient({ url: config.REDIS_HOST });
+
 		// Redis client that will be used to receive messages (put in subscribed state)
 		const subClient = pubClient.duplicate();
 
 		// Creates a Promise that is resolved with an array of results
-		// when all of the provided Promises resolve,
+		// resolves when all of the provided Promises resolved,
 		// or rejected when any Promise is rejected.
 		await Promise.all([pubClient.connect(), subClient.connect()]);
 
-		// Returns a function that will create a RedisAdapter instance.
+		// Sets the adapter for rooms. | Returns a function that will create a RedisAdapter instance.
 		io.adapter(createAdapter(pubClient, subClient));
 
 		return io;
 	}
 
-	private socketIOConnection(io: Server): void {}
+	private socketIOConnection(io: Server): void {
+		// POST SOCKET
+		const postSocketHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
+		postSocketHandler.listen();
+	}
 }

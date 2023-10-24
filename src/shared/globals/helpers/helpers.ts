@@ -1,5 +1,6 @@
 export class Helpers {
 	static firstLetterUppercase(str: string): string {
+		// Converts all the alphabetic characters in a string to lowercase.
 		const valueString = str.toLowerCase();
 
 		return valueString
