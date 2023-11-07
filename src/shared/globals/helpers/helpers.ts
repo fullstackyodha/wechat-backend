@@ -31,7 +31,7 @@ export class Helpers {
 
 	static parseJson(prop: string): any {
 		try {
-			JSON.parse(prop);
+			return JSON.parse(prop);
 		} catch (error) {
 			return prop;
 		}

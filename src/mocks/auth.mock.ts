@@ -28,7 +28,7 @@ export interface IAuthMock {
 	follows?: boolean;
 }
 
-interface IJWT {
+export interface IJWT {
 	jwt?: string;
 }
 
