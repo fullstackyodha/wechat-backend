@@ -41,6 +41,7 @@ export class ReactionCache extends BaseCache {
 				);
 			}
 		} catch (error) {
+			log.error(error);
 			throw new ServerError('Server Error.' + error);
 		}
 	}
@@ -69,6 +70,7 @@ export class ReactionCache extends BaseCache {
 
 			return response.length ? [list, reactionCount] : [[], 0];
 		} catch (error) {
+			log.error(error);
 			throw new ServerError('Server Error.' + error);
 		}
 	}
@@ -102,6 +104,7 @@ export class ReactionCache extends BaseCache {
 
 			return result ? [result, 1] : [];
 		} catch (error) {
+			log.error(error);
 			throw new ServerError('Server Error.' + error);
 		}
 	}
@@ -138,6 +141,7 @@ export class ReactionCache extends BaseCache {
 				JSON.stringify(postReactions)
 			);
 		} catch (error) {
+			log.error(error);
 			throw new ServerError('Server Error.' + error);
 		}
 	}

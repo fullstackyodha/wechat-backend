@@ -40,7 +40,7 @@ export class SignUp {
 		// AuthId for user which is created by Mongodb
 		const authObjectId: ObjectId = new ObjectId();
 
-		// Generating custom user id
+		// Generating custom user id to be stored in CACHE
 		const uId = `${Helpers.generateRandomId(12)}`;
 
 		// AUTH DATA WHILE SIGNUP
@@ -59,7 +59,7 @@ export class SignUp {
 		// UPLOAD AVATAR IMAGE TO CLOUDINARY
 		const result: UploadApiResponse = (await uploads(
 			avatarImage,
-			`${userObjectId}`, //https://res.cloudinary.com/123/${userObjectId}
+			`${userObjectId}`, // https://res.cloudinary.com/123/${userObjectId}
 			true,
 			true
 		)) as UploadApiResponse;
@@ -81,7 +81,7 @@ export class SignUp {
 		// SAVE NEW USER DATA TO THE CACHE
 		await userCache.saveUserToCache(`${userObjectId}`, uId, userDataForCache);
 
-		// Omit data before Adding to DATABASE
+		// Omit data before Adding User to DATABASE
 		omit(userDataForCache, ['uId', 'username', 'email', 'password', 'avatarColor']);
 
 		// ADD DATA TO THE AUTH QUEUE

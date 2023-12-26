@@ -47,7 +47,7 @@ export class WechatServer {
 		// Stores the Session data on the Client within a Cookie
 		app.use(
 			cookieSession({
-				name: 'session',
+				name: 'session', // Name of sesion
 				// The list of keys to use to sign & verify cookie values
 				keys: [config.SECRET_KEY_1!, config.SECRET_KEY_2!],
 				maxAge: 7 * 24 * 60 * 60 * 1000, // milli-seconds
@@ -62,7 +62,7 @@ export class WechatServer {
 		app.use(helmet());
 
 		app.use(
-			// helps to make request to backend
+			// helps to make request from client to backend
 			cors({
 				origin: config.CLIENT_URL,
 				credentials: true,
@@ -91,12 +91,14 @@ export class WechatServer {
 	}
 
 	private globalErrorHandler(app: Application): void {
-		app.all('*', (req: Request, res: Response, next: NextFunction) => {
+		// WHEN URL IS NOT AVAILABLE
+		app.all('*', (req: Request, res: Response) => {
 			res.status(HTTP_STATUS.NOT_FOUND).json({
 				message: `${req.originalUrl} not found!!!`
 			});
 		});
 
+		// CATCH CUSTOM ERRORS
 		app.use(
 			(error: IErrorResponse, req: Request, res: Response, next: NextFunction) => {
 				log.error(error);
@@ -129,7 +131,7 @@ export class WechatServer {
 	private startHttpServer(httpServer: http.Server): void {
 		log.info(`Server with pid ${process.pid} has started`);
 
-		// Start a server listening for connections.
+		// Start a server listening for Connections Requests.
 		httpServer.listen(config.SERVER_PORT, () => {
 			log.info('SERVER LISTENING ON PORT 5000!!!');
 		});

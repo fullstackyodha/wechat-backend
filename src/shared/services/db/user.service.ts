@@ -21,8 +21,8 @@ class UserService {
 				// REFERENCING _id as Local field in Auth Collection
 				$lookup: {
 					from: 'Auth',
-					localField: 'authId', // in User
 					foreignField: '_id', // in Auth
+					localField: 'authId', // in User
 					as: 'authId' // in User
 				}
 			},
@@ -41,7 +41,7 @@ class UserService {
 		const user: IUserDocument[] = await UserModel.aggregate([
 			{
 				$match: {
-					// Converting string userId into Mongoose ObjectId
+					// Converting string authId into Mongoose ObjectId
 					authId: new mongoose.Types.ObjectId(authId)
 				}
 			},

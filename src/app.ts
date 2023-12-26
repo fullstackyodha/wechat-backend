@@ -1,7 +1,8 @@
 import express, { Express } from 'express';
+
 import { WechatServer } from '@root/setupServer';
-import databaseConnection from '@root/setupDatabase';
 import { config } from '@root/config';
+import databaseConnection from '@root/setupDatabase';
 
 class Application {
 	public initialize(): void {
@@ -13,6 +14,7 @@ class Application {
 
 		// Creates an Express application
 		const app: Express = express();
+
 		// Creating new WECHAT SERVER INSTANCE
 		const server: WechatServer = new WechatServer(app);
 

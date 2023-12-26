@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import { config } from '@root/config';
 import Logger from 'bunyan';
+
+import { config } from '@root/config';
 import { redisConnection } from '@service/redis/redis.connection';
 
 // INDICATES THAT ERROR CAME FROM SERVER FILE
@@ -25,6 +26,8 @@ export default function () {
 			})
 			.catch(() => {
 				log.error('ERROR CONNECTING DATABASE!!!');
+
+				// Terminate the process synchronously
 				return process.exit(1);
 			});
 	};
@@ -32,5 +35,5 @@ export default function () {
 	connect();
 
 	// if not connected then it tries to connect again
-	mongoose.connection.on('disconnection', connect);
+	mongoose.connection.on('disconnected', connect);
 }

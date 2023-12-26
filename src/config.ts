@@ -26,21 +26,32 @@ class Config {
 	public SENDGRID_API_KEY: string | undefined;
 	public SENDGRID_SENDER: string | undefined;
 
+	private readonly DEFAULT_DATABASE_URL =
+		'mongodb+srv://fsd:<password>@cluster0.v311ezz.mongodb.net/wechat-backend?retryWrites=true&w=majority';
+
 	constructor() {
-		this.DATABASE_URL = process.env.DATABASE_URL;
+		this.DATABASE_URL = process.env.DATABASE_URL || this.DEFAULT_DATABASE_URL;
 		this.DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
+
 		this.SERVER_PORT = process.env.SERVER_PORT;
-		this.JWT_TOKEN = process.env.JWT_TOKEN || '';
-		this.NODE_ENV = process.env.NODE_ENV || '';
-		this.SECRET_KEY_1 = process.env.SECRET_KEY_1 || '';
-		this.SECRET_KEY_2 = process.env.SECRET_KEY_2 || '';
-		this.CLIENT_URL = process.env.CLIENT_URL || '';
-		this.REDIS_HOST = process.env.REDIS_HOST || '';
-		this.CLOUD_NAME = process.env.CLOUD_NAME || '';
-		this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || '';
-		this.CLOUD_API_SECRET = process.env.CLOUD_API_SECRET || '';
-		this.SENDER_EMAIL = process.env.SENDER_EMAIL || '';
-		this.SENDER_EMAIL_PASSWORD = process.env.SENDER_EMAIL_PASSWORD || '';
+		this.JWT_TOKEN = process.env.JWT_TOKEN || 'myjwttoken';
+		this.NODE_ENV = process.env.NODE_ENV || 'development';
+
+		this.SECRET_KEY_1 = process.env.SECRET_KEY_1 || 'secrectkey1';
+		this.SECRET_KEY_2 = process.env.SECRET_KEY_2 || 'secrectkey2';
+
+		this.CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+		this.REDIS_HOST = process.env.REDIS_HOST || 'redis://localhost:6379';
+
+		this.CLOUD_NAME = process.env.CLOUD_NAME || 'dfqoja2ob';
+		this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || '758733836898911';
+		this.CLOUD_API_SECRET =
+			process.env.CLOUD_API_SECRET || 'kn1ikYZ-dRfGeBLD70YMoOkcxIY';
+
+		this.SENDER_EMAIL = process.env.SENDER_EMAIL || 'alicia.berge52@ethereal.email';
+		this.SENDER_EMAIL_PASSWORD =
+			process.env.SENDER_EMAIL_PASSWORD || 'k3NWmJqqMrguemXsM2';
+
 		this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
 		this.SENDGRID_SENDER = process.env.CLOUD_API_SECRET || '';
 	}
