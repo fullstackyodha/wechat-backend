@@ -19,9 +19,9 @@ const authSchema: Schema = new Schema(
 	{
 		toJSON: {
 			// Returns the Record with no password property
-			transform(_doc, ret) {
-				delete ret.password;
-				return ret;
+			transform(_doc, record) {
+				delete record.password;
+				return record;
 			}
 		}
 	}

@@ -121,7 +121,7 @@ export class PostCache extends BaseCache {
 			// EXECUTES MULTIPLE COMMANDS
 			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
-			multi.ZADD('post', { score: parseInt(uId, 10), value: `${key}` });
+			multi.ZADD('posts', { score: parseInt(uId, 10), value: `${key}` });
 
 			for (const [itemKey, itemValue] of Object.entries(dataToSave)) {
 				multi.HSET(`posts:${key}`, `${itemKey}`, `${itemValue}`);

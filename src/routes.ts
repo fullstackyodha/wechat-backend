@@ -1,5 +1,6 @@
 import { authRoutes } from '@auth/routes/authsRoute';
 import { currentUserRoutes } from '@auth/routes/currentUserRoutes';
+import { commentRoutes } from '@comments/routes/comment.route';
 import { authMiddleware } from '@global/helpers/auth-Middleware';
 import { postRoutes } from '@post/routes/postRoute';
 import { reactionRoutes } from '@reaction/routes/reactionRoute';
@@ -13,6 +14,7 @@ export default (app: Application) => {
 		app.use('/queues', serverAdapter.getRouter());
 
 		app.use(BASE_PATH, authRoutes.routes());
+
 		app.use(BASE_PATH, authRoutes.signOutRoute());
 
 		// Verify whether user is logged in or not
@@ -21,6 +23,8 @@ export default (app: Application) => {
 		app.use(BASE_PATH, authMiddleware.verifyUser, postRoutes.routes());
 
 		app.use(BASE_PATH, authMiddleware.verifyUser, reactionRoutes.routes());
+
+		app.use(BASE_PATH, authMiddleware.verifyUser, commentRoutes.routes());
 	};
 
 	routes();
