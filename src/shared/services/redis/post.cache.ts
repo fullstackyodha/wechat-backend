@@ -238,13 +238,13 @@ export class PostCache extends BaseCache {
 
 			const postReplies: IPostDocument[] = [];
 			for (const post of replies as IPostDocument[]) {
-				if ((post.imgId && post.imgVersion) || post.gifUrl) {
-					post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
-					post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
-					post.createdAt = new Date(Helpers.parseJson(`${post.createdAt}`)) as Date;
+				// if ((post.imgId && post.imgVersion) || post.gifUrl) {
+				post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
+				post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
+				post.createdAt = new Date(Helpers.parseJson(`${post.createdAt}`)) as Date;
 
-					postReplies.push(post);
-				}
+				postReplies.push(post);
+				// }
 			}
 
 			return postReplies;
