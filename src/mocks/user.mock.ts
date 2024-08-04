@@ -21,7 +21,7 @@ export const mockExistingUser = {
 	bgImageVersion: '',
 	bgImageId: '',
 	profilePicture: 'http://place-hold.it/500x500',
-	_id: '60263f14648fed5246e322d9',
+	_id: '669cf8641503534ba9f4e933',
 	work: 'KickChat Inc.',
 	school: 'University of Benin',
 	location: 'Dusseldorf, Germany',
