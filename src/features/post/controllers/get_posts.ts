@@ -20,7 +20,7 @@ export class Get {
 		let totalPosts = 0;
 
 		const cachedPosts: IPostDocument[] = await postCache.getPostsFromCache(
-			'post',
+			'posts',
 			newSkip,
 			limit
 		);
