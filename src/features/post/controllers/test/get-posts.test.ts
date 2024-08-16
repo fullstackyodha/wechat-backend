@@ -41,7 +41,7 @@ describe('Get', () => {
 			await Get.prototype.posts(req, res);
 
 			expect(PostCache.prototype.getPostsFromCache).toHaveBeenCalledWith(
-				'post',
+				'posts',
 				0,
 				10
 			);
@@ -109,7 +109,7 @@ describe('Get', () => {
 
 			await Get.prototype.postsWithImages(req, res);
 			expect(PostCache.prototype.getPostsWithImagesFromCache).toHaveBeenCalledWith(
-				'post',
+				'posts',
 				0,
 				10
 			);
