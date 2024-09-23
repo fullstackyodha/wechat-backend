@@ -44,9 +44,6 @@ export class Create {
 			reactions: { like: 0, love: 0, happy: 0, wow: 0, sad: 0, angry: 0 }
 		} as IPostDocument;
 
-		// Emits an event. (event name, value)
-		socketIOPostObject.emit('addPost', createdPost);
-
 		// SAVE POST TO THE POST CACHE
 		await postCache.savePostToCache({
 			key: postObjectId,
@@ -54,6 +51,9 @@ export class Create {
 			uId: `${req.currentUser!.uId}`,
 			createdPost
 		});
+
+		// Emits an event. (event name, value)
+		socketIOPostObject.emit('addPost', createdPost);
 
 		// ADD CREATED POST TO THE QUEUE WITH USER ID
 		postQueue.addPostJob('addPostToDB', {
@@ -99,9 +99,6 @@ export class Create {
 			reactions: { like: 0, love: 0, happy: 0, wow: 0, sad: 0, angry: 0 }
 		} as IPostDocument;
 
-		// Emits an event. (event name, value)
-		socketIOPostObject.emit('addPost', createdPost);
-
 		// SAVE POST TO THE POST CACHE
 		await postCache.savePostToCache({
 			key: postObjectId,
@@ -109,6 +106,9 @@ export class Create {
 			uId: `${req.currentUser!.uId}`,
 			createdPost
 		});
+
+		// Emits an event. (event name, value)
+		socketIOPostObject.emit('addPost', createdPost);
 
 		// ADD CREATED POST TO THE QUEUE WITH USER ID
 		postQueue.addPostJob('addPostToDB', {

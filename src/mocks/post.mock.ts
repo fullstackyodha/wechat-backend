@@ -54,14 +54,14 @@ export const newPost: IBody = {
 };
 
 export const postMockData: IPostDocument = {
-	_id: new mongoose.Types.ObjectId('6027f77087c9d9ccb1555268'),
+	_id: new mongoose.Types.ObjectId('66aade7569e2a05d025a09f4'),
 	userId: existingUser._id,
 	username: existingUser.username,
 	email: existingUser.email,
 	avatarColor: existingUser.avatarColor,
 	profilePicture: existingUser.profilePicture,
-	post: 'how are you?',
-	bgColor: '#f44336',
+	post: 'My angel is 10months now',
+	bgColor: 'red',
 	imgId: '',
 	imgVersion: '',
 	feelings: 'happy',

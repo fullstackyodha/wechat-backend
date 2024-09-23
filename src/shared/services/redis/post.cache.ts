@@ -156,7 +156,7 @@ export class PostCache extends BaseCache {
 			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
 			for (const value of reply) {
-				multi.HGETALL(`post:${value}`);
+				multi.HGETALL(`posts:${value}`);
 			}
 
 			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
@@ -193,7 +193,7 @@ export class PostCache extends BaseCache {
 			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
 			for (const value of reply) {
-				multi.HGETALL(`post:${value}`);
+				multi.HGETALL(`posts:${value}`);
 			}
 
 			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
@@ -231,20 +231,20 @@ export class PostCache extends BaseCache {
 			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
 			for (const value of reply) {
-				multi.HGETALL(`post:${value}`);
+				multi.HGETALL(`posts:${value}`);
 			}
 
 			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
 
 			const postReplies: IPostDocument[] = [];
 			for (const post of replies as IPostDocument[]) {
-				if ((post.imgId && post.imgVersion) || post.gifUrl) {
-					post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
-					post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
-					post.createdAt = new Date(Helpers.parseJson(`${post.createdAt}`)) as Date;
+				// if ((post.imgId && post.imgVersion) || post.gifUrl) {
+				post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
+				post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
+				post.createdAt = new Date(Helpers.parseJson(`${post.createdAt}`)) as Date;
 
-					postReplies.push(post);
-				}
+				postReplies.push(post);
+				// }
 			}
 
 			return postReplies;
@@ -260,7 +260,7 @@ export class PostCache extends BaseCache {
 				await this.client.connect();
 			}
 
-			const count: number = await this.client.ZCARD('post');
+			const count: number = await this.client.ZCARD('posts');
 
 			return count;
 		} catch (error) {
@@ -275,7 +275,7 @@ export class PostCache extends BaseCache {
 				await this.client.connect();
 			}
 
-			const count: number = await this.client.ZCOUNT('post', uId, uId);
+			const count: number = await this.client.ZCOUNT('posts', uId, uId);
 
 			return count;
 		} catch (error) {
@@ -364,7 +364,7 @@ export class PostCache extends BaseCache {
 			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
 			// REMOVE THE VALUE OF SORTED SET
-			multi.ZREM('post', `${key}`);
+			multi.ZREM('posts', `${key}`);
 
 			multi.DEL(`posts:${key}`);
 			multi.DEL(`comments:${key}`);

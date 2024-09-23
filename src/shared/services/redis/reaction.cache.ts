@@ -25,6 +25,7 @@ export class ReactionCache extends BaseCache {
 				await this.client.connect();
 			}
 
+			// IF PREVIOUS REACTION, THEN REMOVE IT FROM THE LIST AND UPDATE THE NEW POST REACTION
 			if (previousReaction) {
 				this.removePostReactionFromCache(key, reaction.username, postReactions);
 			}
@@ -119,16 +120,19 @@ export class ReactionCache extends BaseCache {
 				await this.client.connect();
 			}
 
+			// GET ALL REACTION FOR A SINGLE POST
 			const response: string[] = await this.client.LRANGE(`reactions:${key}`, 0, -1);
 
 			// EXECUTES MULTIPLE COMMANDS
 			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
 
+			// GET PREVIOUS REACTION OF THE USER ON THAT POST
 			const userPreviousReaction: IReactionDocument = (await this.getPreviousReaction(
 				response,
 				username
 			)) as IReactionDocument;
 
+			// REMOVE THE REACTION OF THE USER FROM THE REACTION LIST
 			multi.LREM(`reactions:${key}`, 1, JSON.stringify(userPreviousReaction));
 
 			await multi.exec();

@@ -1,4 +1,5 @@
 import { Helpers } from '@global/helpers/helpers';
+import { IPostDocument } from '@post/interfaces/post.interface';
 import { PostModel } from '@post/models/post.schema';
 import {
 	IQueryReaction,
@@ -7,6 +8,7 @@ import {
 } from '@reaction/interfaces/reaction.interface';
 import { ReactionModel } from '@reaction/models/reaction.schema';
 import { UserCache } from '@service/redis/user.cache';
+import { IUserDocument } from '@user/interfaces/user.interface';
 import { omit } from 'lodash';
 import mongoose from 'mongoose';
 
@@ -32,28 +34,31 @@ class ReactionService {
 		}
 
 		// [IUserDocument, IReactionDocument, IPostDocument]
-		const updatedReaction = await Promise.all([
-			userCache.getUserFromCache(`users:${userTo}`),
+		const updatedReaction: [IUserDocument, IReactionDocument, IPostDocument] =
+			(await Promise.all([
+				userCache.getUserFromCache(`users:${userTo}`),
 
-			// Finds the first document that matches filter and replaces it with new reaction.
-			ReactionModel.replaceOne(
-				{ postId, type: previousReaction, username },
-				updatedReactionObject,
-				{ upsert: true }
-			),
+				// Finds the first document that matches filter and replaces it with new reaction.
+				ReactionModel.replaceOne(
+					{ postId, type: previousReaction, username },
+					updatedReactionObject,
+					{ upsert: true }
+				),
 
-			// DECREMENT PREVIOUS REACTION TO 0 & INCREMENT NEW REACTION TO 1
-			PostModel.findOneAndUpdate(
-				{ _id: postId },
-				{
-					$inc: {
-						[`reactions.${previousReaction}`]: -1,
-						[`reactions.${type}`]: 1
-					}
-				},
-				{ new: true }
-			)
-		]);
+				// DECREMENT PREVIOUS REACTION TO 0 & INCREMENT NEW REACTION TO 1
+				PostModel.findOneAndUpdate(
+					{ _id: postId },
+					{
+						$inc: {
+							[`reactions.${previousReaction}`]: -1,
+							[`reactions.${type}`]: 1
+						}
+					},
+					{ new: true }
+				)
+			])) as unknown as [IUserDocument, IReactionDocument, IPostDocument];
+
+		// console.log(updatedReaction);
 
 		// SEND REACTION NOTIFICATION
 	}
