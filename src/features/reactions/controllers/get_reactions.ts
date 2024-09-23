@@ -23,7 +23,7 @@ export class Get {
 			: await reactionService.getReactions(
 					{ postId: new mongoose.Types.ObjectId(postId) },
 					{ createdAt: -1 }
-			  );
+				);
 
 		res.status(HTTP_STATUS.OK).json({
 			message: 'Post Reactions.',
