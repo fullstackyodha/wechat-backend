@@ -39,7 +39,7 @@ export class ConnectionCache extends BaseCache {
 		}
 	}
 
-	public async updateFollowersCountInCache(
+	public async updateConnectionCountInCache(
 		key: string, // ID OF USER
 		prop: string, // followerCount / followingCount
 		value: number // 1 / -1
