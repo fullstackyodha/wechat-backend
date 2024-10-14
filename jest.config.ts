@@ -28,6 +28,7 @@ const config: Config.InitialOptions = {
 		'@reaction/(.*)': ['<rootDir>/src/features/reactions/$1'],
 		'@comment/(.*)': ['<rootDir>/src/features/comments/$1'],
 		'@user/(.*)': ['<rootDir>/src/features/user/$1'],
+		'@connections/(.*)': ['<rootDir>/src/features/connections/$1'],
 		'@global/(.*)': ['<rootDir>/src/shared/globals/$1'],
 		'@service/(.*)': ['<rootDir>/src/shared/services/$1'],
 		'@socket/(.*)': ['<rootDir>/src/shared/sockets/$1'],
