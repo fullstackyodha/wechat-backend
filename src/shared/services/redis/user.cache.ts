@@ -108,10 +108,6 @@ export class UserCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
-		} finally {
-			if (this.client.isOpen) {
-				await this.client.quit();
-			}
 		}
 	}
 
@@ -142,10 +138,6 @@ export class UserCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
-		} finally {
-			if (this.client.isOpen) {
-				await this.client.quit();
-			}
 		}
 	}
 }
