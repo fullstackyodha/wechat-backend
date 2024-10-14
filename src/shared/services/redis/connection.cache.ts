@@ -13,7 +13,7 @@ export class ConnectionCache extends BaseCache {
 
 	public async saveFollowerToCache(key: string, value: string): Promise<void> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -22,16 +22,12 @@ export class ConnectionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
-		} finally {
-			if (this.client.isOpen) {
-				await this.client.quit();
-			}
 		}
 	}
 
 	public async removeFollowerFromCache(key: string, value: string): Promise<void> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -40,10 +36,6 @@ export class ConnectionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
-		} finally {
-			if (this.client.isOpen) {
-				await this.client.quit();
-			}
 		}
 	}
 
@@ -53,7 +45,7 @@ export class ConnectionCache extends BaseCache {
 		value: number // 1 / -1
 	): Promise<void> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -61,10 +53,6 @@ export class ConnectionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
-		} finally {
-			if (this.client.isOpen) {
-				await this.client.quit();
-			}
 		}
 	}
 }
