@@ -5,6 +5,7 @@ import { ConnectionCache } from '@service/redis/connection.cache';
 import { UserCache } from '@service/redis/user.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { IFollowerData } from '@connections/interfaces/connections.interface';
+import { socketIOConnectionObject } from '@socket/connection';
 import mongoose from 'mongoose';
 
 const connectionCache: ConnectionCache = new ConnectionCache();
@@ -15,13 +16,13 @@ export class Add {
 		const { followerId } = req.params;
 
 		// UPDATE FOLLOWER COUNT IN CACHE
-		const follwersCount: Promise<void> = connectionCache.updateFollowersCountInCache(
+		const follwersCount: Promise<void> = connectionCache.updateConnectionCountInCache(
 			`${followerId}`,
 			'followersCount',
 			1
 		);
 
-		const follweeCount: Promise<void> = connectionCache.updateFollowersCountInCache(
+		const follweeCount: Promise<void> = connectionCache.updateConnectionCountInCache(
 			`${req.currentUser?.userId}`,
 			'followingCount',
 			1
@@ -45,8 +46,6 @@ export class Add {
 		const followerObjectId: ObjectId = new ObjectId();
 		const addFolloweeData: IFollowerData = Add.prototype.userData(response[0]);
 
-		// SEND DATA TO CLIENT VIA SOCKET
-
 		const addFollowerToCache: Promise<void> = connectionCache.saveFollowerToCache(
 			`followers:${req.currentUser?.userId}`,
 			`${followerId}`
@@ -58,6 +57,9 @@ export class Add {
 		);
 
 		await Promise.all([addFollowerToCache, addFolloweeToCache]);
+
+		// SEND DATA TO CLIENT VIA SOCKET
+		socketIOConnectionObject.emit('add follower', addFolloweeData);
 
 		// SEND DATA TO QUEUE
 

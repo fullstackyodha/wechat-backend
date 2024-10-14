@@ -44,6 +44,10 @@ export class ReactionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error.' + error);
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 
@@ -73,6 +77,10 @@ export class ReactionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error.' + error);
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 
@@ -107,6 +115,10 @@ export class ReactionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error.' + error);
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 
@@ -147,6 +159,10 @@ export class ReactionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error.' + error);
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 

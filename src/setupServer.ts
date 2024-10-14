@@ -19,6 +19,7 @@ import applicationRoutes from '@root/routes';
 import { config } from '@root/config';
 import { CustomError, IErrorResponse } from '@global/helpers/error_handler';
 import { SocketIOPostHandler } from '@socket/post';
+import { SocketIOConnectionHandler } from '@socket/connection';
 
 // import {
 // 	CustomError,
@@ -168,6 +169,11 @@ export class WechatServer {
 	private socketIOConnection(io: Server): void {
 		// POST SOCKET
 		const postSocketHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
+		// CONNECTION SOCKET
+		const connectionSocketHandler: SocketIOConnectionHandler =
+			new SocketIOConnectionHandler(io);
+
 		postSocketHandler.listen();
+		connectionSocketHandler.listen();
 	}
 }

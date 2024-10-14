@@ -22,6 +22,10 @@ export class ConnectionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 
@@ -36,6 +40,10 @@ export class ConnectionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 
@@ -53,6 +61,10 @@ export class ConnectionCache extends BaseCache {
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');
+		} finally {
+			if (this.client.isOpen) {
+				await this.client.quit();
+			}
 		}
 	}
 }
