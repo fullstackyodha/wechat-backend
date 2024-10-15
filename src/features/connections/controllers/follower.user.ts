@@ -47,7 +47,7 @@ export class Add {
 		const addFolloweeData: IFollowerData = Add.prototype.userData(response[0]);
 
 		const addFollowerToCache: Promise<void> = connectionCache.saveFollowerToCache(
-			`followers:${req.currentUser?.userId}`,
+			`following:${req.currentUser?.userId}`,
 			`${followerId}`
 		);
 
@@ -64,7 +64,7 @@ export class Add {
 		// SEND DATA TO QUEUE
 
 		res.status(HTTP_STATUS.OK).json({
-			message: 'Follower user now.'
+			message: 'Followed user successfully.'
 		});
 	}
 
