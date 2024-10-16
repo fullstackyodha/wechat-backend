@@ -7,6 +7,7 @@ import { IUserDocument } from '@user/interfaces/user.interface';
 import { IFollowerData } from '@connections/interfaces/connections.interface';
 import { socketIOConnectionObject } from '@socket/connection';
 import mongoose from 'mongoose';
+import { userService } from '@service/db/user.service';
 
 const connectionCache: ConnectionCache = new ConnectionCache();
 const userCache: UserCache = new UserCache();
@@ -14,6 +15,12 @@ const userCache: UserCache = new UserCache();
 export class Add {
 	public async follower(req: Request, res: Response): Promise<void> {
 		const { followerId } = req.params;
+
+		const user: IUserDocument = await userService.getUserById(followerId);
+
+		if (!user) {
+			res.status(HTTP_STATUS.NOT_FOUND).json({ message: 'User not found' });
+		}
 
 		// UPDATE FOLLOWER COUNT IN CACHE
 		const follwersCount: Promise<void> = connectionCache.updateConnectionCountInCache(
