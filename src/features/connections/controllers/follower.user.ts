@@ -8,6 +8,7 @@ import { IFollowerData } from '@connections/interfaces/connections.interface';
 import { socketIOConnectionObject } from '@socket/connection';
 import mongoose from 'mongoose';
 import { userService } from '@service/db/user.service';
+import { connectionQueue } from '@service/queues/connection.queue';
 
 const connectionCache: ConnectionCache = new ConnectionCache();
 const userCache: UserCache = new UserCache();
@@ -54,12 +55,12 @@ export class Add {
 		const addFolloweeData: IFollowerData = Add.prototype.userData(response[0]);
 
 		const addFollowerToCache: Promise<void> = connectionCache.saveFollowerToCache(
-			`following:${req.currentUser?.userId}`,
+			`followers:${req.currentUser?.userId}`,
 			`${followerId}`
 		);
 
 		const addFolloweeToCache: Promise<void> = connectionCache.saveFollowerToCache(
-			`followers:${followerId}`,
+			`following:${followerId}`,
 			`${req.currentUser?.userId}`
 		);
 
@@ -69,6 +70,12 @@ export class Add {
 		socketIOConnectionObject.emit('add follower', addFolloweeData);
 
 		// SEND DATA TO QUEUE
+		connectionQueue.addConnectionJob('addConnectionToDB', {
+			keyOne: `${req.currentUser?.userId}`,
+			keyTwo: `${followerId}`,
+			username: `${req.currentUser?.username}`,
+			followerDocumentId: followerObjectId
+		});
 
 		res.status(HTTP_STATUS.OK).json({
 			message: 'Followed user successfully.'
