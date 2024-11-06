@@ -36,6 +36,18 @@ class ConnectionRoutes {
 			Connection.prototype.getUserFollowers
 		);
 
+		this.router.get(
+			'/user/block/:followerId',
+			authMiddleware.checkAuthentication,
+			Connection.prototype.blockUser
+		);
+
+		this.router.get(
+			'/user/unblock/:followerId',
+			authMiddleware.checkAuthentication,
+			Connection.prototype.unBlockUser
+		);
+
 		return this.router;
 	}
 }

@@ -1,4 +1,7 @@
-import { IFollowerJobData } from '@connections/interfaces/connections.interface';
+import {
+	IBlockedUserJobData,
+	IFollowerJobData
+} from '@connections/interfaces/connections.interface';
 import { BaseQueue } from './base.queue';
 import { connectionWorker } from '@worker/connection.worker';
 
@@ -13,6 +16,13 @@ class ConnectionQueue extends BaseQueue {
 			5,
 			connectionWorker.removeConnectionFromDB
 		);
+
+		this.processJob('changeBlockStatusInDB', 5, connectionWorker.changeBlockStatusInDB);
+		this.processJob(
+			'changeUnBlockStatusInDB',
+			5,
+			connectionWorker.changeBlockStatusInDB
+		);
 	}
 
 	public addConnectionJob(name: string, data: IFollowerJobData): void {
@@ -20,6 +30,10 @@ class ConnectionQueue extends BaseQueue {
 	}
 
 	public removeConnectionJob(name: string, data: IFollowerJobData): void {
+		this.addJob(name, data);
+	}
+
+	public addChangeBlockStatusJob(name: string, data: IBlockedUserJobData): void {
 		this.addJob(name, data);
 	}
 }

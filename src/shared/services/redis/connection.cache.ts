@@ -7,6 +7,8 @@ import { IFollowerData } from '@connections/interfaces/connections.interface';
 import { UserCache } from './user.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import mongoose from 'mongoose';
+import { Helpers } from '@global/helpers/helpers';
+import { remove } from 'lodash';
 
 const log: Logger = config.createLogger('connectionsCache');
 const userCache: UserCache = new UserCache();
@@ -94,6 +96,38 @@ export class ConnectionCache extends BaseCache {
 			}
 
 			return list;
+		} catch (error) {
+			log.error(error);
+			throw new ServerError('Server Error. Try Again!!!');
+		}
+	}
+
+	public async updateBlockedUserPropInCache(
+		key: string,
+		value: string,
+		prop: string,
+		type: 'block' | 'unblock'
+	): Promise<void> {
+		try {
+			if (!this.client.isOpen) {
+				this.client.connect();
+			}
+
+			const response: string = (await this.client.HGET(`users${key}`, prop)) as string;
+
+			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+			let blocked: string[] = Helpers.parseJson(response) as string[];
+
+			if (type === 'block') {
+				blocked = [...blocked, value];
+			} else {
+				remove(blocked, (id: string) => id === value);
+				blocked = [...blocked];
+			}
+
+			multi.HSET(`users${key}`, `${prop}`, JSON.stringify(blocked));
+
+			await multi.exec();
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');

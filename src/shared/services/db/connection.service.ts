@@ -5,7 +5,7 @@ import {
 import { FollowerModel } from '@connections/models/connections.schema';
 import { IQueryComplete, IQueryDeleted } from '@post/interfaces/post.interface';
 import { UserModel } from '@user/models/user.schema';
-import { ObjectId } from 'mongodb';
+import { ObjectId, PushOperator } from 'mongodb';
 import mongoose, { mongo, Query } from 'mongoose';
 
 class ConnectionService {
@@ -158,6 +158,50 @@ class ConnectionService {
 		]);
 
 		return follower;
+	}
+
+	public async blockUser(userId: string, followerId: string): Promise<void> {
+		await UserModel.bulkWrite([
+			{
+				updateOne: {
+					filter: {
+						_id: userId,
+						blocked: { $ne: new mongoose.Types.ObjectId(followerId) }
+					},
+					update: { $push: { blocked: followerId } as PushOperator<Document> }
+				}
+			},
+			{
+				updateOne: {
+					filter: {
+						_id: followerId,
+						blockedBy: { $ne: new mongoose.Types.ObjectId(userId) }
+					},
+					update: { $push: { blockedBy: userId } as PushOperator<Document> }
+				}
+			}
+		]);
+	}
+
+	public async unBlockUser(userId: string, followerId: string): Promise<void> {
+		await UserModel.bulkWrite([
+			{
+				updateOne: {
+					filter: {
+						_id: userId
+					},
+					update: { $pull: { blocked: followerId } as PushOperator<Document> }
+				}
+			},
+			{
+				updateOne: {
+					filter: {
+						_id: followerId
+					},
+					update: { $pull: { blockedBy: userId } as PushOperator<Document> }
+				}
+			}
+		]);
 	}
 }
 

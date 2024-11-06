@@ -20,6 +20,7 @@ import { config } from '@root/config';
 import { CustomError, IErrorResponse } from '@global/helpers/error_handler';
 import { SocketIOPostHandler } from '@socket/post';
 import { SocketIOConnectionHandler } from '@socket/connection';
+import { SocketIOUserHandler } from '@socket/user';
 
 // import {
 // 	CustomError,
@@ -172,8 +173,11 @@ export class WechatServer {
 		// CONNECTION SOCKET
 		const connectionSocketHandler: SocketIOConnectionHandler =
 			new SocketIOConnectionHandler(io);
+		// USER SOCKET
+		const userSocketHandler: SocketIOUserHandler = new SocketIOUserHandler(io);
 
 		postSocketHandler.listen();
 		connectionSocketHandler.listen();
+		userSocketHandler.listen();
 	}
 }

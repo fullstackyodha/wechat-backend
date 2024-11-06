@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { ConnectionCache } from '@service/redis/connection.cache';
 import { IFollower, IFollowerData } from '@connections/interfaces/connections.interface';
 import { connectionService } from '@service/db/connection.service';
+import { connectionQueue } from '@service/queues/connection.queue';
 
 const connectionCache: ConnectionCache = new ConnectionCache();
 
@@ -41,5 +42,63 @@ export class Connection {
 			message: 'User Followers',
 			followers: followers
 		});
+	}
+
+	async blockUser(req: Request, res: Response) {
+		const { followerId } = req.params;
+
+		Connection.prototype.updateBlockedUser(
+			followerId,
+			req.currentUser!.userId,
+			'block'
+		);
+
+		connectionQueue.addChangeBlockStatusJob('changeBlockStatusInDB', {
+			keyOne: `${req.currentUser!.userId}`,
+			keyTwo: `${followerId}`,
+			type: 'block'
+		});
+
+		res.status(HTTP_STATUS.OK).json({ message: 'User blocked successfully' });
+	}
+
+	async unBlockUser(req: Request, res: Response) {
+		const { followerId } = req.params;
+
+		Connection.prototype.updateBlockedUser(
+			followerId,
+			req.currentUser!.userId,
+			'unblock'
+		);
+
+		connectionQueue.addChangeBlockStatusJob('changeUnBlockStatusInDB', {
+			keyOne: `${req.currentUser!.userId}`,
+			keyTwo: `${followerId}`,
+			type: 'unblock'
+		});
+
+		res.status(HTTP_STATUS.OK).json({ message: 'User Unblocked successfully' });
+	}
+
+	private async updateBlockedUser(
+		followerId: string,
+		userId: string,
+		type: 'block' | 'unblock'
+	): Promise<void> {
+		const blocked: Promise<void> = connectionCache.updateBlockedUserPropInCache(
+			`${userId}`,
+			'blocked',
+			`${followerId}`,
+			type
+		);
+
+		const blockedBy: Promise<void> = connectionCache.updateBlockedUserPropInCache(
+			`${followerId}`,
+			'blockedBy',
+			`${userId}`,
+			type
+		);
+
+		await Promise.all([blocked, blockedBy]);
 	}
 }
