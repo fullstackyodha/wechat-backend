@@ -8,9 +8,9 @@ const followerSchema: Schema = new Schema({
 });
 
 const FollowerModel: Model<IFollowerDocument> = model<IFollowerDocument>(
-	'Follower',
+	'Connections',
 	followerSchema,
-	'Follower'
+	'Connections'
 );
 
 export { FollowerModel };
