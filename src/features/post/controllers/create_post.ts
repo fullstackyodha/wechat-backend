@@ -12,6 +12,7 @@ import { postQueue } from '@service/queues/post.queue';
 import { uploads } from '@global/helpers/cloudinaryUpload';
 import { UploadApiResponse } from 'cloudinary';
 import { BadRequestError } from '@global/helpers/error_handler';
+import { imageQueue } from '@service/queues/image.queue';
 
 const log: Logger = config.createLogger('post');
 
@@ -114,6 +115,12 @@ export class Create {
 		postQueue.addPostJob('addPostToDB', {
 			key: req.currentUser!.userId,
 			value: createdPost
+		});
+
+		imageQueue.addImageJob('addImageToDB', {
+			key: req.currentUser!.userId,
+			imgId: result?.public_id,
+			imgVersion: result.version.toString()
 		});
 
 		// ADD POST DATA TO THE QUEUE

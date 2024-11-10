@@ -32,6 +32,7 @@
 			"@comments/*": ["src/features/comments/*"],
 			"@connections/*": ["src/features/connections/*"],
 			"@notifications/*": ["src/features/notifications/*"],
+			"@images/*": ["src/features/images/*"],
 			"@global/*": ["src/shared/globals/*"],
 			"@service/*": ["src/shared/services/*"],
 			"@socket/*": ["src/shared/sockets/*"],

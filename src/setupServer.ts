@@ -22,6 +22,7 @@ import { SocketIOPostHandler } from '@socket/post';
 import { SocketIOConnectionHandler } from '@socket/connection';
 import { SocketIOUserHandler } from '@socket/user';
 import { SocketIONotificationHandler } from '@socket/notifications';
+import { SocketIOImageHandler } from '@socket/image';
 
 // import {
 // 	CustomError,
@@ -181,9 +182,12 @@ export class WechatServer {
 		const notificationSocketHandler: SocketIONotificationHandler =
 			new SocketIONotificationHandler();
 
+		const imageSocketHandler: SocketIOImageHandler = new SocketIOImageHandler();
+
 		postSocketHandler.listen();
 		connectionSocketHandler.listen();
 		userSocketHandler.listen();
 		notificationSocketHandler.listen(io);
+		imageSocketHandler.listen(io);
 	}
 }
