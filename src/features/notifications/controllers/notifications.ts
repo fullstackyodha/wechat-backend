@@ -1,7 +1,4 @@
-import {
-	INotification,
-	INotificationDocument
-} from '@notifications/interfaces/notification.interface';
+import { INotificationDocument } from '@notifications/interfaces/notification.interface';
 import { notificationService } from '@service/db/notification.service';
 import { notificationQueue } from '@service/queues/notification.queue';
 import { socketIONotificationObject } from '@socket/notifications';
