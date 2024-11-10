@@ -36,4 +36,12 @@ export class Helpers {
 			return prop;
 		}
 	}
+
+	static isDataURL(value: string): boolean {
+		const dataURLRegex =
+			/^\s*data:([a-z]+\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base64)?,([a-z0-9!$&',()*+;=\-._~:@\\/?%\s]*)\s*$/i;
+
+		// Returns a Boolean value that indicates whether or not a pattern exists in a searched string
+		return dataURLRegex.test(value);
+	}
 }

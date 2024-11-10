@@ -30,6 +30,7 @@ const config: Config.InitialOptions = {
 		'@user/(.*)': ['<rootDir>/src/features/user/$1'],
 		'@connections/(.*)': ['<rootDir>/src/features/connections/$1'],
 		'@notifications/(.*)': ['<rootDir>/src/features/notifications/$1'],
+		'@images/(.*)': ['<rootDir>/src/features/images/$1'],
 		'@global/(.*)': ['<rootDir>/src/shared/globals/$1'],
 		'@service/(.*)': ['<rootDir>/src/shared/services/$1'],
 		'@socket/(.*)': ['<rootDir>/src/shared/sockets/$1'],

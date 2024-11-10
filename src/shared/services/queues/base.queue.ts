@@ -14,6 +14,7 @@ import { IReactionJob } from '@reaction/interfaces/reaction.interface';
 import { ICommentJob } from '@comments/interfaces/comment.interface';
 import { IFollowerJobData } from '@connections/interfaces/connections.interface';
 import { INotificationJobData } from '@notifications/interfaces/notification.interface';
+import { IFileImageJobData } from '@images/interfaces/image.interface';
 
 type IBaseJobData =
 	| IAuthJob
@@ -22,7 +23,8 @@ type IBaseJobData =
 	| IReactionJob
 	| ICommentJob
 	| IFollowerJobData
-	| INotificationJobData;
+	| INotificationJobData
+	| IFileImageJobData;
 
 // ARRAY TO STORE THE DISTINCT QUEUES
 let bullAdapters: BullAdapter[] = [];
