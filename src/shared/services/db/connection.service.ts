@@ -3,10 +3,22 @@ import {
 	IFollowerDocument
 } from '@connections/interfaces/connections.interface';
 import { FollowerModel } from '@connections/models/connections.schema';
+import {
+	INotificationDocument,
+	INotificationTemplate
+} from '@notifications/interfaces/notification.interface';
+import { NotificationModel } from '@notifications/models/notification.scehma';
 import { IQueryComplete, IQueryDeleted } from '@post/interfaces/post.interface';
+import { notificationTemplate } from '@service/email/templates/notifications/notification.template';
+import { emailQueue } from '@service/queues/email.queue';
+import { UserCache } from '@service/redis/user.cache';
+import { socketIONotificationObject } from '@socket/notifications';
+import { IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.schema';
 import { ObjectId, PushOperator } from 'mongodb';
 import mongoose, { mongo, Query } from 'mongoose';
+
+const userCache: UserCache = new UserCache();
 
 class ConnectionService {
 	public async addFollowerToDB(
@@ -19,7 +31,7 @@ class ConnectionService {
 		const followeeObjectId = new mongoose.Types.ObjectId(followeeId);
 		const followerObjectId = new mongoose.Types.ObjectId(userId);
 
-		await FollowerModel.create({
+		const following = await FollowerModel.create({
 			_id: followerDocumentId,
 			followeeId: followeeObjectId,
 			followerId: followerObjectId
@@ -41,7 +53,52 @@ class ConnectionService {
 			}
 		]);
 
-		await Promise.all([users, UserModel.findOne({ _id: followeeId })]);
+		const response: [mongo.BulkWriteResult, IUserDocument | null] = await Promise.all([
+			users,
+			userCache.getUserFromCache(followeeId)
+		]);
+
+		if (response[1]?.notifications.follows && userId !== followeeId) {
+			const notificationModel: INotificationDocument = new NotificationModel();
+
+			const notifications = await notificationModel.insertNotification({
+				userTo: followeeId,
+				userFrom: userId,
+				message: `${username} folowed you`,
+				notificationType: 'follows',
+				entityId: new mongoose.Types.ObjectId(userId),
+				createdItemId: new mongoose.Types.ObjectId(following._id),
+				createdAt: new Date(),
+				comment: '',
+				post: '',
+				reaction: '',
+				imgId: '',
+				imgVersion: '',
+				gifUrl: '',
+				read: false
+			});
+
+			// SEND TO CLIENT USING SOCKET IO
+			socketIONotificationObject.emit('insert notification', notifications, {
+				userTo: followeeId
+			});
+
+			// SEND TO EMAIL QUEUE
+			const templateParams: INotificationTemplate = {
+				username: response[1]?.username ?? '',
+				message: `${username} folowed you`,
+				header: 'New Connection Notification'
+			};
+
+			const template: string =
+				notificationTemplate.notificationMessageTemplate(templateParams);
+
+			emailQueue.addEmailJob('connectionEmail', {
+				receiverEmail: response[1]?.email ?? '',
+				template,
+				subject: `${username} folowed you`
+			});
+		}
 	}
 
 	public async removeFollowerFromDB(followeeId: string, followerId: string) {

@@ -1,4 +1,9 @@
 import { Helpers } from '@global/helpers/helpers';
+import {
+	INotificationDocument,
+	INotificationTemplate
+} from '@notifications/interfaces/notification.interface';
+import { NotificationModel } from '@notifications/models/notification.scehma';
 import { IPostDocument } from '@post/interfaces/post.interface';
 import { PostModel } from '@post/models/post.schema';
 import {
@@ -7,7 +12,10 @@ import {
 	IReactionJob
 } from '@reaction/interfaces/reaction.interface';
 import { ReactionModel } from '@reaction/models/reaction.schema';
+import { notificationTemplate } from '@service/email/templates/notifications/notification.template';
+import { emailQueue } from '@service/queues/email.queue';
 import { UserCache } from '@service/redis/user.cache';
+import { socketIONotificationObject } from '@socket/notifications';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { omit } from 'lodash';
 import mongoose from 'mongoose';
@@ -61,6 +69,47 @@ class ReactionService {
 		// console.log(updatedReaction);
 
 		// SEND REACTION NOTIFICATION
+		if (updatedReaction[0]?.notifications.reactions && userTo !== userFrom) {
+			const notificationModel: INotificationDocument = new NotificationModel();
+
+			const notifications = await notificationModel.insertNotification({
+				userTo: userTo as string,
+				userFrom: userFrom as string,
+				message: `${username} reaction to your post`,
+				notificationType: 'reactions',
+				entityId: new mongoose.Types.ObjectId(postId),
+				createdItemId: new mongoose.Types.ObjectId(updatedReaction[1]._id),
+				createdAt: new Date(),
+				comment: '',
+				post: updatedReaction[2].post,
+				reaction: type!,
+				imgId: updatedReaction[2].imgId!,
+				imgVersion: updatedReaction[2].imgVersion!,
+				gifUrl: updatedReaction[2].gifUrl!,
+				read: false
+			});
+
+			// SEND TO CLIENT USING SOCKET IO
+			socketIONotificationObject.emit('insert notification', notifications, {
+				userTo
+			});
+
+			// SEND TO EMAIL QUEUE
+			const templateParams: INotificationTemplate = {
+				username: updatedReaction[1]?.username ?? '',
+				message: `${username} reacted to your post`,
+				header: 'New Reaction Notification'
+			};
+
+			const template: string =
+				notificationTemplate.notificationMessageTemplate(templateParams);
+
+			emailQueue.addEmailJob('reactionEmail', {
+				receiverEmail: updatedReaction[0]?.email ?? '',
+				template,
+				subject: `${username} reacted to your post`
+			});
+		}
 	}
 
 	public async getReactions(
