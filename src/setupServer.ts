@@ -23,6 +23,7 @@ import { SocketIOConnectionHandler } from '@socket/connection';
 import { SocketIOUserHandler } from '@socket/user';
 import { SocketIONotificationHandler } from '@socket/notifications';
 import { SocketIOImageHandler } from '@socket/image';
+import { SocketIOChatHandler } from '@socket/chat';
 
 // import {
 // 	CustomError,
@@ -184,10 +185,13 @@ export class WechatServer {
 
 		const imageSocketHandler: SocketIOImageHandler = new SocketIOImageHandler();
 
+		const chatSocketHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
+
 		postSocketHandler.listen();
 		connectionSocketHandler.listen();
 		userSocketHandler.listen();
 		notificationSocketHandler.listen(io);
 		imageSocketHandler.listen(io);
+		chatSocketHandler.listen();
 	}
 }
