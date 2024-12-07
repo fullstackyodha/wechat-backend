@@ -1,6 +1,5 @@
 // Represents a Socket.IO server.
 import { ISenderReceiver } from '@chats/interfaces/chat.interface';
-import { ISocketData } from '@user/interfaces/user.interface';
 import { Server, Socket } from 'socket.io';
 
 export let socketIOChatObject: Server;
