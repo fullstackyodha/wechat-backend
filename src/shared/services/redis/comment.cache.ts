@@ -20,7 +20,7 @@ export class CommentCache extends BaseCache {
 	// ADD POST COMMENT TO CACHE
 	public async savePostCommentToCache(postId: string, value: string): Promise<void> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -50,7 +50,7 @@ export class CommentCache extends BaseCache {
 	// GET POST COMMENT FROM CACHE
 	public async getPostCommentsFromCache(postId: string): Promise<ICommentDocument[]> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -79,7 +79,7 @@ export class CommentCache extends BaseCache {
 		commentId: string
 	): Promise<ICommentDocument[]> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -110,7 +110,7 @@ export class CommentCache extends BaseCache {
 	// GET POST COMMENT NAMES FROM CACHE
 	public async getCommentNamesFromCache(postId: string): Promise<ICommentNameList[]> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 
@@ -143,7 +143,7 @@ export class CommentCache extends BaseCache {
 	// commentId: string
 	public async deletePostCommentFromCache(): Promise<void> {
 		try {
-			if (!this.client.connect()) {
+			if (!this.client.isOpen) {
 				this.client.connect();
 			}
 		} catch (error) {
