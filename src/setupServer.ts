@@ -24,11 +24,6 @@ import { SocketIOUserHandler } from '@socket/user';
 import { SocketIONotificationHandler } from '@socket/notifications';
 import { SocketIOImageHandler } from '@socket/image';
 
-// import {
-// 	CustomError,
-// 	IErrorResponse
-// } from './shared/globals/helpers/error_handler';
-
 // INDICATES THAT ERROR CAME FROM SERVER FILE
 const log: Logger = config.createLogger('server');
 
