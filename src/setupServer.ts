@@ -168,18 +168,22 @@ export class WechatServer {
 	private socketIOConnection(io: Server): void {
 		// POST SOCKET
 		const postSocketHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
+
 		// CONNECTION SOCKET
 		const connectionSocketHandler: SocketIOConnectionHandler =
 			new SocketIOConnectionHandler(io);
+
 		// USER SOCKET
 		const userSocketHandler: SocketIOUserHandler = new SocketIOUserHandler(io);
 
-		// USER SOCKET
+		// NOTIFICATION SOCKET
 		const notificationSocketHandler: SocketIONotificationHandler =
 			new SocketIONotificationHandler();
 
+		// IMAGE SOCKET
 		const imageSocketHandler: SocketIOImageHandler = new SocketIOImageHandler();
 
+		// CHAT SOCKET
 		const chatSocketHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
 
 		postSocketHandler.listen();

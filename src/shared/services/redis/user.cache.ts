@@ -69,7 +69,7 @@ export class UserCache extends BaseCache {
 			`${JSON.stringify(blocked)}`,
 			'blockedBy',
 			`${JSON.stringify(blockedBy)}`,
-			'profilePitcure',
+			'profilePicture',
 			`${profilePicture}`,
 			'followersCount',
 			`${followersCount}`,
