@@ -2,8 +2,8 @@ import { BaseCache } from './base.cache';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { ServerError } from '@global/helpers/error_handler';
-import { findIndex } from 'lodash';
-import { IChatUsers, IMessageData } from '@chats/interfaces/chat.interface';
+import { find, findIndex } from 'lodash';
+import { IChatList, IChatUsers, IMessageData } from '@chats/interfaces/chat.interface';
 import { Helpers } from '@global/helpers/helpers';
 
 const log: Logger = config.createLogger('messageCache');
@@ -58,7 +58,75 @@ export class MessageCache extends BaseCache {
 				await this.client.connect();
 			}
 
-			await this.client.RPUSH(`message:${conversationId}`, JSON.stringify(message));
+			await this.client.RPUSH(`messages:${conversationId}`, JSON.stringify(message));
+		} catch (error) {
+			log.error(error);
+			throw new ServerError('Server Error. Try Again!!!');
+		}
+	}
+
+	public async getUserConversationList(key: string): Promise<IMessageData[]> {
+		try {
+			if (!this.client.isOpen) {
+				await this.client.connect();
+			}
+
+			const userChatList: string[] = await this.client.LRANGE(
+				`chatList:${key}`,
+				0,
+				-1
+			);
+
+			const conversationChatList: IMessageData[] = [];
+
+			for (const item of userChatList) {
+				const chatItem: IChatList = Helpers.parseJson(item) as IChatList;
+				const lastMessage: string = (await this.client.LINDEX(
+					`messages:${chatItem.conversationId}`,
+					-1
+				)) as string;
+
+				conversationChatList.push(Helpers.parseJson(lastMessage));
+			}
+
+			return conversationChatList;
+		} catch (error) {
+			log.error(error);
+			throw new ServerError('Server Error. Try Again!!!');
+		}
+	}
+
+	public async getChatMessagesFromCache(
+		senderId: string,
+		receiverId: string
+	): Promise<IMessageData[]> {
+		try {
+			if (!this.client.isOpen) {
+				await this.client.connect();
+			}
+
+			const userChatList: string[] = await this.client.LRANGE(
+				`chatList:${senderId}`,
+				0,
+				-1
+			);
+
+			const receiver: string = find(userChatList, (listItem: string) =>
+				listItem.includes(receiverId)
+			) as string;
+
+			const parsedReceiver: IChatList = Helpers.parseJson(receiver) as IChatList;
+			if (parsedReceiver && parsedReceiver.conversationId) {
+				const chatMessages: string[] = await this.client.LRANGE(
+					`messages:${parsedReceiver.conversationId}`,
+					0,
+					-1
+				);
+
+				return chatMessages.map((message: string) => Helpers.parseJson(message));
+			}
+
+			return [];
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');

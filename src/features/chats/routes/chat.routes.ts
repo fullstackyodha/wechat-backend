@@ -1,4 +1,5 @@
 import { Add } from '@chats/controllers/add_chat_message';
+import { Get } from '@chats/controllers/get_chat_message';
 import { authMiddleware } from '@global/helpers/auth-Middleware';
 import express, { Router } from 'express';
 
@@ -14,6 +15,18 @@ class ChatRoutes {
 			'/chat/message',
 			authMiddleware.checkAuthentication,
 			Add.prototype.message
+		);
+
+		this.router.get(
+			'/chat/message/conversation-list',
+			authMiddleware.checkAuthentication,
+			Get.prototype.conversationList
+		);
+
+		this.router.get(
+			'/chat/message/user/:receiverId',
+			authMiddleware.checkAuthentication,
+			Get.prototype.chatMessages
 		);
 
 		this.router.post(
