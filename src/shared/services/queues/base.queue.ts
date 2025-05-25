@@ -15,7 +15,11 @@ import { ICommentJob } from '@comments/interfaces/comment.interface';
 import { IFollowerJobData } from '@connections/interfaces/connections.interface';
 import { INotificationJobData } from '@notifications/interfaces/notification.interface';
 import { IFileImageJobData } from '@images/interfaces/image.interface';
-import { IChatJobData, IMessageData } from '@chats/interfaces/chat.interface';
+import {
+	IChatJobData,
+	IMarkAsDelete,
+	IMessageData
+} from '@chats/interfaces/chat.interface';
 
 type IBaseJobData =
 	| IAuthJob
@@ -27,7 +31,8 @@ type IBaseJobData =
 	| INotificationJobData
 	| IFileImageJobData
 	| IChatJobData
-	| IMessageData;
+	| IMessageData
+	| IMarkAsDelete;
 
 // ARRAY TO STORE THE DISTINCT QUEUES
 let bullAdapters: BullAdapter[] = [];

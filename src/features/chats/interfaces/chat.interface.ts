@@ -1,6 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 import { AuthPayload } from '@auth/interfaces/auth.interface';
 import { IReaction } from '@reaction/interfaces/reaction.interface';
+import { ObjectId } from 'mongodb';
 
 export interface IMessageDocument extends Document {
 	_id: mongoose.Types.ObjectId;
@@ -87,4 +88,9 @@ export interface IGetMessageFromCache {
 	index: number;
 	message: string;
 	receiver: IChatList;
+}
+
+export interface IMarkAsDelete {
+	type: string;
+	messageId: ObjectId;
 }

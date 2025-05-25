@@ -1,4 +1,5 @@
 import { Add } from '@chats/controllers/add_chat_message';
+import { Delete } from '@chats/controllers/delete_chat_message';
 import { Get } from '@chats/controllers/get_chat_message';
 import { authMiddleware } from '@global/helpers/auth-Middleware';
 import express, { Router } from 'express';
@@ -39,6 +40,12 @@ class ChatRoutes {
 			'/chat/message/remove-chat-users',
 			authMiddleware.checkAuthentication,
 			Add.prototype.removeChatUsers
+		);
+
+		this.router.delete(
+			'/chat/message/delete/:senderId/:receiverId/:messageId/:type',
+			authMiddleware.checkAuthentication,
+			Delete.prototype.markMessageAsDelete
 		);
 
 		return this.router;
