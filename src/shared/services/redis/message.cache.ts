@@ -10,7 +10,6 @@ import {
 	IMessageData
 } from '@chats/interfaces/chat.interface';
 import { Helpers } from '@global/helpers/helpers';
-import { RedisClientType } from 'redis';
 
 const log: Logger = config.createLogger('messageCache');
 
