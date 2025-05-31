@@ -3,12 +3,16 @@ import { NextFunction, Request, Response } from 'express';
 import { ObjectSchema } from 'joi';
 
 // DECORATOR - RETURNS A FUNCTION WITH THESE PROPERTIES WHICH RETURNS VOID
-type IJoiDecorator = (target: any, key: string, descriptor: PropertyDescriptor) => void;
+type IJoiDecorator = (
+	target: unknown,
+	key: string,
+	descriptor: PropertyDescriptor
+) => void;
 
 // VALIDATE PROPERTIES PASSED IN REQUEST BODY
 export function joiValidation(schema: ObjectSchema): IJoiDecorator {
 	// RETURNS OF TYPE IJoiDecorator
-	return (_target: any, _key: string, descriptor: PropertyDescriptor) => {
+	return (_target: unknown, _key: string, descriptor: PropertyDescriptor) => {
 		const originalMethod = descriptor.value;
 		// console.log('Descriptor: ', descriptor);
 		// console.log('Original Method: ', originalMethod); // create()
