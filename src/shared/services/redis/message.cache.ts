@@ -2,7 +2,7 @@ import { BaseCache } from './base.cache';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { ServerError } from '@global/helpers/error_handler';
-import { filter, find, findIndex } from 'lodash';
+import { filter, find, findIndex, remove } from 'lodash';
 import {
 	IChatList,
 	IChatUsers,
@@ -10,7 +10,7 @@ import {
 	IMessageData
 } from '@chats/interfaces/chat.interface';
 import { Helpers } from '@global/helpers/helpers';
-import mongoose from 'mongoose';
+import { IReaction } from '@reaction/interfaces/reaction.interface';
 
 const log: Logger = config.createLogger('messageCache');
 
@@ -269,7 +269,7 @@ export class MessageCache extends BaseCache {
 		}
 	}
 
-	public async updateChatMessage(
+	public async updateChatMessages(
 		senderId: string,
 		receiverId: string
 	): Promise<IMessageData> {
@@ -296,32 +296,104 @@ export class MessageCache extends BaseCache {
 				-1
 			);
 
-			const unReadMessages: string[] = filter(
+			const unreadMessages: string[] = filter(
 				messages,
-				(message: string) => !Helpers.parseJson(message).isRead
+				(listItem: string) => !Helpers.parseJson(listItem).isRead
 			);
 
-			for (const [index, item] of unReadMessages.entries()) {
+			for (const item of unreadMessages) {
 				const chatItem = Helpers.parseJson(item) as IMessageData;
+
+				const index = findIndex(messages, (listItem: string) =>
+					listItem.includes(`${chatItem._id}`)
+				);
 
 				chatItem.isRead = true;
 
 				await this.client.LSET(
-					`messages:${parsedReceiver.conversationId}`,
+					`messages:${chatItem.conversationId}`,
 					index,
 					JSON.stringify(chatItem)
 				);
 			}
 
-			const lastMessgae: string = (await this.client.LINDEX(
+			const lastMessage: string = (await this.client.LINDEX(
 				`messages:${parsedReceiver.conversationId}`,
 				-1
 			)) as string;
 
-			return Helpers.parseJson(lastMessgae) as IMessageData;
+			return Helpers.parseJson(lastMessage) as IMessageData;
 		} catch (error) {
 			log.error(error);
-			throw new ServerError('Server Error. Try Again!!!');
+			throw new ServerError('Server error. Try again.');
+		}
+	}
+
+	public async updateMessageReaction(
+		conversationId: string,
+		messageId: string,
+		reaction: string,
+		senderName: string,
+		type: 'add' | 'remove'
+	): Promise<IMessageData> {
+		try {
+			if (!this.client.isOpen) {
+				await this.client.connect();
+			}
+
+			const messages: string[] = await this.client.LRANGE(
+				`messages:${conversationId}`,
+				0,
+				-1
+			);
+
+			const messageIndex: number = findIndex(messages, (listItem: string) =>
+				listItem.includes(messageId)
+			);
+
+			const message: string = (await this.client.LINDEX(
+				`messages:${conversationId}`,
+				messageIndex
+			)) as string;
+
+			const parsedMessage: IMessageData = Helpers.parseJson(message) as IMessageData;
+
+			const reactions: IReaction[] = [];
+
+			if (parsedMessage) {
+				remove(
+					parsedMessage.reaction,
+					(reaction: IReaction) => reaction.senderName === senderName
+				);
+
+				if (type === 'add') {
+					reactions.push({ senderName, type: reaction });
+
+					parsedMessage.reaction = [...parsedMessage.reaction, ...reactions];
+
+					await this.client.LSET(
+						`messages:${conversationId}`,
+						messageIndex,
+						JSON.stringify(parsedMessage)
+					);
+				} else {
+					await this.client.LSET(
+						`messages:${conversationId}`,
+						messageIndex,
+						JSON.stringify(parsedMessage)
+					);
+				}
+			}
+
+			const updatedMessage: string = (await this.client.LINDEX(
+				`messages:${conversationId}`,
+				messageIndex
+			)) as string;
+
+			return Helpers.parseJson(updatedMessage) as IMessageData;
+		} catch (error) {
+			log.error(error);
+			throw new ServerError('Server error. Try again.');
 		}
 	}
 

@@ -22,7 +22,7 @@ export class Delete {
 		socketIOChatObject.emit('message read', updatedMessage);
 		socketIOChatObject.emit('chat list', updatedMessage);
 
-		chatQueue.markMessageAsDeletedJob('markMessageAsDeletedInDB', {
+		chatQueue.addChatJob('markMessageAsDeletedInDB', {
 			messageId: new mongoose.Types.ObjectId(messageId),
 			type
 		});

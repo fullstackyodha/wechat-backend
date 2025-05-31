@@ -119,7 +119,7 @@ export class Add {
 		await messageCache.addChatMessageToCache(`${conversationObjectId}`, messageData);
 
 		// ADD MESSAGE DATA TO QUEUE
-		chatQueue.addChatMessageJob('addChatMessageToDB', messageData);
+		chatQueue.addChatJob('addChatMessageToDB', messageData);
 
 		res.status(HTTPS_STATUS.OK).json({
 			message: 'Message sent successfully.',
