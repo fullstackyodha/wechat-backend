@@ -62,6 +62,51 @@ class UserService {
 		return user[0];
 	}
 
+	public async getAllUsers(
+		userId: string,
+		skip: number,
+		limit: number
+	): Promise<IUserDocument[]> {
+		const user: IUserDocument[] = await UserModel.aggregate([
+			{
+				$match: {
+					// Converting string authId into Mongoose ObjectId
+					_id: { $ne: new mongoose.Types.ObjectId(userId) }
+				}
+			},
+			{
+				$skip: skip
+			},
+			{
+				$limit: limit
+			},
+			{
+				$sort: {
+					createdAt: -1
+				}
+			},
+			{
+				// Look up into Auth collections with authId as local field
+				// in User collection and _id as foreign field in Auth Collection
+				$lookup: {
+					from: 'Auth',
+					localField: 'authId',
+					foreignField: '_id',
+					as: 'authId'
+				}
+			},
+			{ $unwind: '$authId' },
+			{ $project: this.aggregateProject() }
+		]);
+
+		return user;
+	}
+
+	public async getTotalUsersInDB(): Promise<number> {
+		const total: number = await UserModel.find({}).countDocuments();
+		return total;
+	}
+
 	private aggregateProject() {
 		return {
 			_id: 1,

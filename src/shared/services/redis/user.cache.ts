@@ -1,5 +1,6 @@
 import { ServerError } from '@global/helpers/error_handler';
 import { Helpers } from '@global/helpers/helpers';
+import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
 import {
@@ -12,6 +13,15 @@ import Logger from 'bunyan';
 const log: Logger = config.createLogger('userCache');
 
 type UserItem = string | ISocialLinks | INotificationSettings;
+
+// CREATING A MULTI TYPE
+export type UserCacheMultiType =
+	| string
+	| number
+	| Buffer
+	| RedisCommandRawReply[]
+	| IUserDocument
+	| IUserDocument[];
 
 export class UserCache extends BaseCache {
 	constructor() {
@@ -144,6 +154,70 @@ export class UserCache extends BaseCache {
 			response.profilePicture = Helpers.parseJson(`${response.profilePicture}`);
 
 			return response;
+		} catch (error) {
+			log.error(error);
+			throw new ServerError('Server Error. Try Again!!!');
+		}
+	}
+
+	public async getUsersFromCache(
+		start: number,
+		end: number,
+		excludedUserKey: string
+	): Promise<IUserDocument[]> {
+		try {
+			if (!this.client.isOpen) {
+				await this.client.connect();
+			}
+
+			// GET USERS FROM SORTED SETS
+			const response: string[] = await this.client.ZRANGE('users', start, end, {
+				REV: true
+			});
+
+			const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+
+			for (const key of response) {
+				if (key !== excludedUserKey) {
+					multi.HGETALL(`users:${key}`);
+				}
+			}
+
+			const replies: UserCacheMultiType = (await multi.exec()) as UserCacheMultiType;
+
+			const users: IUserDocument[] = [];
+
+			for (const user of replies as IUserDocument[]) {
+				user.createdAt = new Date(Helpers.parseJson(`${user.createdAt}`));
+				user.postsCount = Helpers.parseJson(`${user.postsCount}`);
+				user.blocked = Helpers.parseJson(`${user.blocked}`);
+				user.blockedBy = Helpers.parseJson(`${user.blockedBy}`);
+				user.notifications = Helpers.parseJson(`${user.notifications}`);
+				user.social = Helpers.parseJson(`${user.social}`);
+				user.followersCount = Helpers.parseJson(`${user.followersCount}`);
+				user.followingCount = Helpers.parseJson(`${user.followingCount}`);
+				user.bgImageVersion = Helpers.parseJson(`${user.bgImageVersion}`);
+				user.bgImageId = Helpers.parseJson(`${user.bgImageId}`);
+				user.profilePicture = Helpers.parseJson(`${user.profilePicture}`);
+
+				users.push(user);
+			}
+
+			return users;
+		} catch (error) {
+			log.error(error);
+			throw new ServerError('Server Error. Try Again!!!');
+		}
+	}
+
+	public async getTotalUsersInCache(): Promise<number> {
+		try {
+			if (!this.client.isOpen) {
+				await this.client.connect();
+			}
+
+			const count: number = await this.client.ZCARD('users');
+			return count as number;
 		} catch (error) {
 			log.error(error);
 			throw new ServerError('Server Error. Try Again!!!');

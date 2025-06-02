@@ -9,6 +9,7 @@ import { notificationRoutes } from '@notifications/routes/notification.route';
 import { postRoutes } from '@post/routes/postRoute';
 import { reactionRoutes } from '@reaction/routes/reactionRoute';
 import { serverAdapter } from '@service/queues/base.queue';
+import { userRoutes } from '@user/routes/user.routes';
 import { Application } from 'express';
 
 const BASE_PATH = '/api/v1';
@@ -37,6 +38,8 @@ export default (app: Application) => {
 		app.use(BASE_PATH, authMiddleware.verifyUser, imageRoutes.routes());
 
 		app.use(BASE_PATH, authMiddleware.verifyUser, chatRoutes.routes());
+
+		app.use(BASE_PATH, authMiddleware.verifyUser, userRoutes.routes());
 	};
 
 	routes();
