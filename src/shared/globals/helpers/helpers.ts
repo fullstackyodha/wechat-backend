@@ -16,6 +16,10 @@ export class Helpers {
 		return str.toLowerCase();
 	}
 
+	static escapeRegex(text: string): string {
+		return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+	}
+
 	static generateRandomId(integerLength: number): number {
 		const characters = '0123456789';
 		const charactersLength = characters.length;
@@ -43,5 +47,14 @@ export class Helpers {
 
 		// Returns a Boolean value that indicates whether or not a pattern exists in a searched string
 		return dataURLRegex.test(value);
+	}
+
+	static shuffle(list: string[]): string[] {
+		for (let i = list.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[list[i], list[j]] = [list[j], list[i]];
+		}
+
+		return list;
 	}
 }

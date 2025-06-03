@@ -141,6 +141,30 @@ export class Get {
 		return { users, totalUsers: totalUsers };
 	}
 
+	public async randomUserSuggestions(req: Request, res: Response): Promise<void> {
+		let randomUsers: IUserDocument[] = [];
+
+		const cachedUsers: IUserDocument[] = await userCache.getRandomUserFromCache(
+			`${req.currentUser!.userId}`,
+			req.currentUser!.username
+		);
+
+		if (cachedUsers.length) {
+			randomUsers = [...cachedUsers];
+		} else {
+			const users: IUserDocument[] = await userService.getRandomUsers(
+				req.currentUser!.userId
+			);
+
+			randomUsers = [...users];
+		}
+
+		res.status(HTTP_STATUS.OK).json({
+			message: 'User suggestions',
+			data: { users: randomUsers }
+		});
+	}
+
 	private async usersCount(type: string): Promise<number> {
 		const totalUsers: number =
 			type === 'redis'
