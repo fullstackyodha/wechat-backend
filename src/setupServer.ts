@@ -23,6 +23,7 @@ import { SocketIOConnectionHandler } from '@socket/connection';
 import { SocketIOUserHandler } from '@socket/user';
 import { SocketIONotificationHandler } from '@socket/notifications';
 import { SocketIOImageHandler } from '@socket/image';
+import { SocketIOChatHandler } from '@socket/chat';
 
 // INDICATES THAT ERROR CAME FROM SERVER FILE
 const log: Logger = config.createLogger('server');
@@ -167,22 +168,29 @@ export class WechatServer {
 	private socketIOConnection(io: Server): void {
 		// POST SOCKET
 		const postSocketHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
+
 		// CONNECTION SOCKET
 		const connectionSocketHandler: SocketIOConnectionHandler =
 			new SocketIOConnectionHandler(io);
+
 		// USER SOCKET
 		const userSocketHandler: SocketIOUserHandler = new SocketIOUserHandler(io);
 
-		// USER SOCKET
+		// NOTIFICATION SOCKET
 		const notificationSocketHandler: SocketIONotificationHandler =
 			new SocketIONotificationHandler();
 
+		// IMAGE SOCKET
 		const imageSocketHandler: SocketIOImageHandler = new SocketIOImageHandler();
+
+		// CHAT SOCKET
+		const chatSocketHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
 
 		postSocketHandler.listen();
 		connectionSocketHandler.listen();
 		userSocketHandler.listen();
 		notificationSocketHandler.listen(io);
 		imageSocketHandler.listen(io);
+		chatSocketHandler.listen();
 	}
 }

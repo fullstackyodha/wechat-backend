@@ -15,6 +15,7 @@ import { UserCache } from '@service/redis/user.cache';
 import { socketIONotificationObject } from '@socket/notifications';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.schema';
+import { map } from 'lodash';
 import { ObjectId, PushOperator } from 'mongodb';
 import mongoose, { mongo, Query } from 'mongoose';
 
@@ -161,7 +162,7 @@ class ConnectionService {
 					profilePicture: '$authId.profilePicture',
 					uId: '$authId.uId',
 					avatarColor: '$authId.avatarColor',
-					profilePitcure: '$followeeId.profilePicture',
+					followeeProfilePicture: '$followeeId.profilePicture',
 					postCount: '$followeeId.postsCount',
 					followingCount: '$followeeId.followingCount',
 					followerCount: '$followeeId.followerCount',
@@ -204,7 +205,7 @@ class ConnectionService {
 					profilePicture: '$authId.profilePicture',
 					uId: '$authId.uId',
 					avatarColor: '$authId.avatarColor',
-					profilePitcure: '$followerId.profilePicture',
+					followerProfilePicture: '$followerId.profilePicture',
 					postCount: '$followerId.postsCount',
 					followingCount: '$followerId.followingCount',
 					followerCount: '$followerId.followerCount',
@@ -259,6 +260,20 @@ class ConnectionService {
 				}
 			}
 		]);
+	}
+
+	public async getFolloweesIds(userId: string): Promise<string[]> {
+		const followee = await FollowerModel.aggregate([
+			{ $match: { followerId: new mongoose.Types.ObjectId(userId) } },
+			{
+				$project: {
+					followeeId: 1,
+					_id: 0
+				}
+			}
+		]);
+
+		return map(followee, (result) => result.followeeId.toString());
 	}
 }
 
