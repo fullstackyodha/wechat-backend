@@ -26,6 +26,8 @@ class Config {
 	public SENDGRID_API_KEY: string | undefined;
 	public SENDGRID_SENDER: string | undefined;
 
+	public EC2_URL: string | undefined;
+
 	private readonly DEFAULT_DATABASE_URL =
 		'mongodb+srv://fsd:<password>@cluster0.v311ezz.mongodb.net/wechat-backend?retryWrites=true&w=majority';
 
@@ -54,6 +56,8 @@ class Config {
 
 		this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
 		this.SENDGRID_SENDER = process.env.CLOUD_API_SECRET || '';
+
+		this.EC2_URL = process.env.EC2_URL || '';
 	}
 
 	public validateConfig(): void {
