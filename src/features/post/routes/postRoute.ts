@@ -56,6 +56,25 @@ class PostRoutes {
 			Delete.prototype.post
 		);
 
+		// Video Routes
+		this.router.post(
+			'/post/video/post',
+			authMiddleware.checkAuthentication,
+			Create.prototype.postWithVideo
+		);
+
+		this.router.get(
+			'/post/videos/:page',
+			authMiddleware.checkAuthentication,
+			Get.prototype.postsWithVideos
+		);
+
+		this.router.put(
+			'/post/video/:postId',
+			authMiddleware.checkAuthentication,
+			Update.prototype.postWithVideo
+		);
+
 		return this.router;
 	}
 }

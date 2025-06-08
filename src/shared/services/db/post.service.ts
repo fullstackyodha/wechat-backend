@@ -36,6 +36,8 @@ class PostService {
 		if (query?.imgId && query?.gifUrl) {
 			// imgId & gifUrl must not be empty
 			postQuery = { $or: [{ imgId: { $ne: '' } }, { gifUrl: { $ne: '' } }] };
+		} else if (query?.videoId) {
+			postQuery = { $or: [{ videoId: { $ne: '' } }] };
 		} else {
 			postQuery = query;
 		}
