@@ -8,6 +8,7 @@ import cookieSession from 'cookie-session';
 import compression from 'compression';
 import HTTP_STATUS from 'http-status-codes';
 import Logger from 'bunyan';
+import apiStats from 'swagger-stats';
 
 import 'express-async-errors';
 
@@ -40,6 +41,7 @@ export class WechatServer {
 		this.standardMiddleware(this.app);
 		this.routeMiddleware(this.app);
 		this.globalErrorHandler(this.app);
+		this.apiMonitoring(this.app);
 		this.startServer(this.app);
 	}
 
@@ -90,6 +92,14 @@ export class WechatServer {
 		applicationRoutes(app);
 	}
 
+	private apiMonitoring(app: Application): void {
+		app.use(
+			apiStats.getMiddleware({
+				uriPath: '/api-monitoring'
+			})
+		);
+	}
+
 	private globalErrorHandler(app: Application): void {
 		// WHEN URL IS NOT AVAILABLE
 		app.all('*', (req: Request, res: Response) => {
@@ -114,6 +124,10 @@ export class WechatServer {
 	}
 
 	private async startServer(app: Application): Promise<void> {
+		if (!config.JWT_TOKEN) {
+			throw new Error('JWT_TOKEN is not provided.');
+		}
+
 		try {
 			// CREATING HTTP SERVER WITH EXPRESS APP
 			const httpServer: http.Server = new http.Server(app);
@@ -129,6 +143,7 @@ export class WechatServer {
 	}
 
 	private startHttpServer(httpServer: http.Server): void {
+		log.info(`Worker with pid ${process.pid} has started`);
 		log.info(`Server with pid ${process.pid} has started`);
 
 		// Start a server listening for Connections Requests.
