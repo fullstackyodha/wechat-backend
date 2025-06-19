@@ -11,7 +11,7 @@ class NotificationRoute {
 
 	public routes(): Router {
 		this.router.get(
-			'/notification',
+			'/notifications',
 			authMiddleware.checkAuthentication,
 			Notifications.prototype.getNotifications
 		);

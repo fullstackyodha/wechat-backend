@@ -12,7 +12,7 @@ export class Notifications {
 
 		res.status(HTTP_STATUS.OK).json({
 			message: 'User Notification Fetched Successfully.',
-			notifications
+			data: { notifications }
 		});
 	}
 
