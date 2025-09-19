@@ -34,7 +34,7 @@ class ReactionService {
 			reactionObject
 		} = reactionData;
 
-		let updatedReactionObject: IReactionDocument = reactionObject as IReactionDocument;
+		let updatedReactionObject: Partial<IReactionDocument> = reactionObject as Partial<IReactionDocument>;
 
 		// REMOVING ID IF REACTION ALREADY PRESENT
 		if (previousReaction) {
@@ -166,8 +166,7 @@ class ReactionService {
 					$inc: {
 						[`reactions.${previousReaction}`]: -1
 					}
-				},
-				{ new: true }
+				}
 			)
 		]);
 

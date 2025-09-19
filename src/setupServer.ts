@@ -10,8 +10,6 @@ import HTTP_STATUS from 'http-status-codes';
 import Logger from 'bunyan';
 import apiStats from 'swagger-stats';
 
-import 'express-async-errors';
-
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
@@ -102,7 +100,7 @@ export class WechatServer {
 
 	private globalErrorHandler(app: Application): void {
 		// WHEN URL IS NOT AVAILABLE
-		app.all('*', (req: Request, res: Response) => {
+		app.all('/', (req: Request, res: Response) => {
 			res.status(HTTP_STATUS.NOT_FOUND).json({
 				message: `${req.originalUrl} not found!!!`
 			});

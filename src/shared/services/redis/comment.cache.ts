@@ -27,13 +27,13 @@ export class CommentCache extends BaseCache {
 			await this.client.LPUSH(`comments:${postId}`, value);
 
 			// GET THE POST WITH POSTID AND GET THE COMMENT COUNT PROP
-			const commentsCount: string[] = await this.client.HMGET(
+			const commentsCount: (string | null)[] = await this.client.HMGET(
 				`posts:${postId}`,
 				'commentsCount'
 			);
 
 			// INCREMENT POST COUNT
-			const count: number = parseInt(commentsCount[0], 10) + 1;
+			const count: number = parseInt(commentsCount[0] ?? '0', 10) + 1;
 
 			// SAVE THE NEW INCREMENTED POST COUNT AT THE POSTID
 			await this.client.HSET(`posts:${postId}`, 'commentsCount', `${count}`);

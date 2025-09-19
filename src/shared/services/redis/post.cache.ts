@@ -8,7 +8,6 @@ import {
 	ISavePostToCache
 } from '@post/interfaces/post.interface';
 import { Helpers } from '@global/helpers/helpers';
-import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 
 const log: Logger = config.createLogger('postCache');
 
@@ -17,7 +16,6 @@ export type PostCacheMultiType =
 	| string
 	| number
 	| Buffer
-	| RedisCommandRawReply[]
 	| IPostDocument
 	| IPostDocument[];
 
@@ -113,7 +111,7 @@ export class PostCache extends BaseCache {
 			}
 
 			// GET THE USER WITH CURRENTUSER ID AND GET THE POST COUNT PROP
-			const postsCount: string[] = await this.client.HMGET(
+			const postsCount: (string | null)[] = await this.client.HMGET(
 				`users:${currentUserId}`,
 				'postsCount'
 			);
@@ -128,7 +126,7 @@ export class PostCache extends BaseCache {
 			}
 
 			// INCREMENT POST COUNT
-			const count: number = parseInt(postsCount[0], 10) + 1;
+			const count: number = parseInt(postsCount[0] ?? '0', 10) + 1;
 
 			// UPDATE POST COUNT OF THE USER
 			multi.HSET(`users:${currentUserId}`, 'postsCount', count);
@@ -163,7 +161,8 @@ export class PostCache extends BaseCache {
 				multi.HGETALL(`posts:${value}`);
 			}
 
-			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+			const replies: PostCacheMultiType =
+				(await multi.exec()) as unknown as PostCacheMultiType;
 
 			const postReplies: IPostDocument[] = [];
 			for (const post of replies as IPostDocument[]) {
@@ -204,7 +203,8 @@ export class PostCache extends BaseCache {
 				multi.HGETALL(`posts:${value}`);
 			}
 
-			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+			const replies: PostCacheMultiType =
+				(await multi.exec()) as unknown as PostCacheMultiType;
 
 			const postWithImages: IPostDocument[] = [];
 			for (const post of replies as IPostDocument[]) {
@@ -246,7 +246,8 @@ export class PostCache extends BaseCache {
 				multi.HGETALL(`posts:${value}`);
 			}
 
-			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+			const replies: PostCacheMultiType =
+				(await multi.exec()) as unknown as PostCacheMultiType;
 
 			const postReplies: IPostDocument[] = [];
 			for (const post of replies as IPostDocument[]) {
@@ -354,7 +355,8 @@ export class PostCache extends BaseCache {
 			// GET THE RECENT UPDATED DATA
 			multi.HGETALL(`posts:${key}`);
 
-			const reply: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+			const reply: PostCacheMultiType =
+				(await multi.exec()) as unknown as PostCacheMultiType;
 
 			const postReply = reply as IPostDocument[];
 
@@ -398,7 +400,8 @@ export class PostCache extends BaseCache {
 				multi.HGETALL(`posts:${value}`);
 			}
 
-			const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+			const replies: PostCacheMultiType =
+				(await multi.exec()) as unknown as PostCacheMultiType;
 
 			const postWithVideos: IPostDocument[] = [];
 			for (const post of replies as IPostDocument[]) {
@@ -426,7 +429,7 @@ export class PostCache extends BaseCache {
 			}
 
 			// GET THE POST COUNT OF USER WITH USERID
-			const postCount: string[] = await this.client.HMGET(
+			const postCount: (string | null)[] = await this.client.HMGET(
 				`users:${currentUserId}`,
 				'postCount'
 			);
@@ -440,7 +443,7 @@ export class PostCache extends BaseCache {
 			multi.DEL(`comments:${key}`);
 			multi.DEL(`reactions:${key}`);
 
-			const count: number = parseInt(postCount[0], 10) - 1;
+			const count: number = parseInt(postCount[0] ?? '0', 10) - 1;
 			multi.HSET(`users:${currentUserId}`, ['postsCount', count]);
 			await multi.exec();
 

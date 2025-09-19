@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 
 export interface INotificationDocument extends Document {
-	_id?: mongoose.Types.ObjectId | string;
+	_id: mongoose.Types.ObjectId | string;
 	userTo: string;
 	userFrom: string;
 	message: string;

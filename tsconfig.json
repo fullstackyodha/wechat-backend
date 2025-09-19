@@ -40,5 +40,7 @@
 			"@worker/*": ["src/shared/workers/*"],
 			"@root/*": ["src/*"]
 		}
-	}
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "build", "tests", "**/*.test.ts"]
 }

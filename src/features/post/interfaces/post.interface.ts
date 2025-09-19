@@ -11,7 +11,7 @@ export interface IReactions {
 }
 
 export interface IPostDocument extends Document {
-	_id?: string | mongoose.Types.ObjectId;
+	_id: string | mongoose.Types.ObjectId;
 	userId: string;
 	username: string;
 	email: string;

@@ -151,7 +151,7 @@ export class Images {
 		await Promise.all([bgImgId, bgImageVersion]);
 
 		imageQueue.addImageJob('removeImageFromDB', {
-			imageId: image._id
+			imageId: image._id as string
 		});
 
 		res.status(HTTP_STATUS.CREATED).json({

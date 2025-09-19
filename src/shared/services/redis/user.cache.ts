@@ -1,6 +1,5 @@
 import { ServerError } from '@global/helpers/error_handler';
 import { Helpers } from '@global/helpers/helpers';
-import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
 import {
@@ -20,7 +19,6 @@ export type UserCacheMultiType =
 	| string
 	| number
 	| Buffer
-	| RedisCommandRawReply[]
 	| IUserDocument
 	| IUserDocument[];
 
@@ -184,7 +182,8 @@ export class UserCache extends BaseCache {
 				}
 			}
 
-			const replies: UserCacheMultiType = (await multi.exec()) as UserCacheMultiType;
+			const replies: UserCacheMultiType =
+				(await multi.exec()) as unknown as UserCacheMultiType;
 
 			const users: IUserDocument[] = [];
 
